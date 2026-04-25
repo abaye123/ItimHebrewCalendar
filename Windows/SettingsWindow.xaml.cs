@@ -98,6 +98,7 @@ namespace ItimHebrewCalendar.Windows
             ShowModernHolidays = original.ShowModernHolidays,
             UseSunsetDateTransition = original.UseSunsetDateTransition,
             ZmanimSource = original.ZmanimSource,
+            ShowSecondTempleTimer = original.ShowSecondTempleTimer,
         };
 
         private void PopulateControls()
@@ -147,6 +148,7 @@ namespace ItimHebrewCalendar.Windows
             ShowGregToggle.IsOn = _workingCopy.ShowGregorianInCalendar;
             ShowHebInTrayToggle.IsOn = _workingCopy.ShowHebrewDateInTray;
             CloseOnFocusLossToggle.IsOn = _workingCopy.CloseTrayPopupOnFocusLoss;
+            ShowTempleTimerToggle.IsOn = _workingCopy.ShowSecondTempleTimer;
 
             // Settings file is the source of truth; the Registry key is reconciled on Save.
             StartupToggle.IsOn = _workingCopy.StartWithWindows;
@@ -232,6 +234,7 @@ namespace ItimHebrewCalendar.Windows
             _workingCopy.ShowGregorianInCalendar = ShowGregToggle.IsOn;
             _workingCopy.ShowHebrewDateInTray = ShowHebInTrayToggle.IsOn;
             _workingCopy.CloseTrayPopupOnFocusLoss = CloseOnFocusLossToggle.IsOn;
+            _workingCopy.ShowSecondTempleTimer = ShowTempleTimerToggle.IsOn;
             _workingCopy.Theme = GetSelectedTheme();
             _workingCopy.StartWithWindows = StartupToggle.IsOn;
 

@@ -61,6 +61,7 @@ namespace ItimHebrewCalendar.Services
         public bool CloseTrayPopupOnFocusLoss { get; set; } = true;
         public bool ShowModernHolidays { get; set; } = false;
         public bool UseSunsetDateTransition { get; set; } = false;
+        public bool ShowSecondTempleTimer { get; set; } = true;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ZmanimSource ZmanimSource { get; set; } = ZmanimSource.KosherJava;

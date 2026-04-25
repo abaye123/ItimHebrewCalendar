@@ -115,7 +115,7 @@ namespace ItimHebrewCalendar.Windows
                         TxtTodayOmer.Visibility = Visibility.Collapsed;
                     }
 
-                    var temple = SecondTempleTimer.Compute();
+                    var temple = settings.ShowSecondTempleTimer ? SecondTempleTimer.Compute() : null;
                     bool showTemple = temple != null;
                     if (showTemple)
                     {
