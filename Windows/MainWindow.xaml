@@ -84,6 +84,15 @@
                                    HorizontalAlignment="Center"
                                    Margin="0,6,0,0"
                                    Visibility="Collapsed"/>
+                        <TextBlock x:Name="TxtTempleTimer"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                   Opacity="0.85"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0"
+                                   Visibility="Collapsed"/>
                     </StackPanel>
                 </Border>
 

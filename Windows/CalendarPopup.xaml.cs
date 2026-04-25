@@ -21,6 +21,7 @@ namespace ItimHebrewCalendar.Windows
         private const int BaseHeight = 640;
         private const int OmerExtraHeight = 32;
         private const int AfterSunsetExtraHeight = 28;
+        private const int TempleExtraHeight = 40;
         private int _currentHeight = -1;
         private DateTime _halachicTodayDate = DateTime.Today;
         private Brush? _defaultTodayCardBrush;
@@ -114,9 +115,22 @@ namespace ItimHebrewCalendar.Windows
                         TxtTodayOmer.Visibility = Visibility.Collapsed;
                     }
 
+                    var temple = SecondTempleTimer.Compute();
+                    bool showTemple = temple != null;
+                    if (showTemple)
+                    {
+                        TxtTempleTimer.Text = SecondTempleTimer.FormatCompact(temple!);
+                        TxtTempleTimer.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        TxtTempleTimer.Visibility = Visibility.Collapsed;
+                    }
+
                     int targetHeight = BaseHeight;
                     if (showOmer) targetHeight += OmerExtraHeight;
                     if (afterSunset) targetHeight += AfterSunsetExtraHeight;
+                    if (showTemple) targetHeight += TempleExtraHeight;
                     ApplyHeight(targetHeight);
                 }
 

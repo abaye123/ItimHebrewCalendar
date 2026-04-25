@@ -236,6 +236,8 @@ namespace ItimHebrewCalendar.Windows
                 var tooltip = $"{hebFull} ({DateTime.Today:dd/MM/yyyy})";
                 if (!string.IsNullOrEmpty(omer)) tooltip += $"\n{omer}";
                 if (afterSunset) tooltip += "\n(לאחר השקיעה)";
+                var temple = SecondTempleTimer.Compute();
+                if (temple != null) tooltip += $"\n{SecondTempleTimer.FormatCompact(temple)}";
                 _trayIcon.UpdateToolTip(tooltip);
             }
             catch (Exception ex)
