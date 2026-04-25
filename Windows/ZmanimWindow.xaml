@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ItimHebrewCalendar.Windows.ZmanimWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ItimHebrewCalendar.Windows">
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar"
+                Grid.Row="0"
+                Height="40">
+            <StackPanel Orientation="Horizontal"
+                    Spacing="10"
+                    VerticalAlignment="Center"
+                    Margin="16,0,0,0">
+                <Image x:Name="TitleBarIcon"
+                        Width="18"
+                        Height="18"
+                        VerticalAlignment="Center"/>
+                <TextBlock Text="זמני היום ההלכתיים"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1"
+                Margin="24,16,24,8">
+            <TextBlock Text="זמני היום ההלכתיים"
+                       Style="{ThemeResource TitleTextBlockStyle}"/>
+            <TextBlock x:Name="TxtSubtitle"
+                       Style="{ThemeResource BodyTextBlockStyle}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2"
+                Margin="24,8,24,8"
+                ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                    Spacing="4">
+                <TextBlock Text="תאריך"
+                        Style="{ThemeResource CaptionTextBlockStyle}"/>
+                <CalendarDatePicker x:Name="DatePicker"
+                                    DateChanged="OnDateChanged"
+                                    HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                    Spacing="4">
+                <TextBlock Text="מיקום"
+                        Style="{ThemeResource CaptionTextBlockStyle}"/>
+                <ComboBox x:Name="LocationCombo"
+                          SelectionChanged="OnLocationChanged"
+                          MaxDropDownHeight="320"
+                          HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="3"
+                VerticalScrollBarVisibility="Auto"
+                Padding="24,8,24,20">
+            <StackPanel Spacing="10">
+                <InfoBar IsOpen="True"
+                         IsClosable="False"
+                         Severity="Warning"
+                         Title="הזמנים למידע בלבד"
+                         Message="ייתכנו סטיות של מספר דקות. אין לסמוך להלכה למעשה"/>
+                <StackPanel x:Name="ResultsPanel" Spacing="8"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

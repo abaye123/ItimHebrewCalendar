@@ -1,0 +1,37 @@
+# Build output
+bin/
+obj/
+publish/
+Release/
+
+# Native DLL (נבנה מ-Go)
+Resources/HebcalNative.dll
+HebcalNative/lib/HebcalNative.dll
+HebcalNative/lib/HebcalNative.h
+HebcalNative/lib/go.sum
+
+# User settings
+*.user
+*.suo
+*.userprefs
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+# Rider
+_ReSharper*/
+*.ReSharper
+
+# NuGet
+*.nupkg
+packages/
+
+# MSBuild
+*.binlog
+
+# Logs
+*.log
+errors.log

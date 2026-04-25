@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ItimHebrewCalendar.Windows.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ItimHebrewCalendar.Windows">
+
+    <Grid x:Name="RootGrid">
+        <Grid.Resources>
+            <!-- Geometry instances cannot be shared across visuals in WinUI, so each Path
+                 sets its own Data inline. This style only carries the shared rendering settings. -->
+            <Style x:Key="GitHubIconStyle" TargetType="Path">
+                <Setter Property="Stretch" Value="Uniform"/>
+                <Setter Property="Width" Value="14"/>
+                <Setter Property="Height" Value="14"/>
+                <Setter Property="Fill" Value="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="40">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10"
+                        VerticalAlignment="Center"
+                        Margin="16,0,0,0">
+                <Image x:Name="TitleBarIcon"
+                       Width="18" Height="18"
+                       VerticalAlignment="Center"/>
+                <TextBlock Text="הגדרות עיתים"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="24,16,24,8" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                <Image x:Name="HeaderIcon"
+                       Width="48" Height="48"
+                       VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="הגדרות"
+                               Style="{ThemeResource TitleTextBlockStyle}"/>
+                    <TextBlock Text="עיתים · לוח שנה עברי עם זמני היום"
+                               Style="{ThemeResource BodyTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2" Padding="24,12,24,12" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="8">
+
+                <Expander x:Name="AppearanceExpander"
+                          Header="מראה"
+                          IsExpanded="True"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="8" Padding="4,8">
+                        <ComboBox x:Name="ThemeCombo"
+                                  HorizontalAlignment="Stretch"
+                                  MinWidth="300"
+                                  SelectionChanged="ThemeCombo_SelectionChanged">
+                            <ComboBoxItem Tag="System">
+                                <StackPanel>
+                                    <TextBlock Text="לפי מצב המערכת"/>
+                                    <TextBlock Text="מתאים את עצמו להגדרות Windows (ברירת מחדל)"
+                                               Style="{ThemeResource CaptionTextBlockStyle}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="Light">
+                                <StackPanel>
+                                    <TextBlock Text="מצב בהיר"/>
+                                    <TextBlock Text="רקע בהיר, טקסט כהה"
+                                               Style="{ThemeResource CaptionTextBlockStyle}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="Dark">
+                                <StackPanel>
+                                    <TextBlock Text="מצב כהה"/>
+                                    <TextBlock Text="רקע כהה, טקסט בהיר"
+                                               Style="{ThemeResource CaptionTextBlockStyle}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="LocationExpander"
+                          Header="מיקום"
+                          IsExpanded="True"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="8" Padding="4,8">
+                        <ComboBox x:Name="CityCombo"
+                                  HorizontalAlignment="Stretch"
+                                  MinWidth="300"
+                                  MaxDropDownHeight="320"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button x:Name="DetectLocationButton"
+                                    Click="DetectLocationButton_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE81D;" FontSize="13"/>
+                                    <TextBlock Text="זהה מיקום אוטומטית"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock x:Name="DetectLocationStatus"
+                                       VerticalAlignment="Center"
+                                       Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <TextBlock Text="המיקום משפיע על חישוב זמני היום ההלכתיים ועל זמני הדלקת הנרות."
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="HolidaysExpander"
+                          Header="חגים וזמנים"
+                          IsExpanded="True"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="12" Padding="4,8">
+                        <ToggleSwitch x:Name="IsraelToggle"
+                                      Header="השתמש בלוח חגים של ארץ ישראל"
+                                      OffContent="כולל יום טוב שני של גלויות"
+                                      OnContent="יום טוב אחד בלבד"/>
+
+                        <ToggleSwitch x:Name="ShowModernToggle"
+                                      Header="הצג חגים מודרניים ישראליים"
+                                      OnContent="יום העצמאות, יום הזיכרון, יום ירושלים, יום השואה"
+                                      OffContent="מוסתרים"/>
+
+                        <ToggleSwitch x:Name="SunsetTransitionToggle"
+                                      Header="החלף תאריך עברי בשקיעה"
+                                      OnContent="לאחר השקיעה מוצג התאריך העברי של המחר"
+                                      OffContent="התאריך מתחלף בחצות הלועזי"/>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="מנוע חישוב זמני היום"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <ComboBox x:Name="ZmanimSourceCombo"
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="300">
+                                <ComboBoxItem Tag="KosherJava">
+                                    <StackPanel>
+                                        <TextBlock Text="KosherJava (ברירת מחדל)"/>
+                                        <TextBlock Text="חישובים מורחבים מהספרייה של Eliyahu Hershfeld"
+                                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem Tag="Hebcal">
+                                    <StackPanel>
+                                        <TextBlock Text="hebcal-go"/>
+                                        <TextBlock Text="חישובים בסיסיים מ-hebcal-go"
+                                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="הדלקת נרות - דקות לפני השקיעה"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <NumberBox x:Name="CandleMinutesBox"
+                                       Minimum="0" Maximum="120"
+                                       SpinButtonPlacementMode="Inline"
+                                       SmallChange="1" LargeChange="10"/>
+                            <TextBlock Text="ברוב הערים 18 דקות. בירושלים וצפת נהוג 40 דקות."
+                                       Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="תצוגת הלוח"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="12" Padding="4,8">
+                        <ToggleSwitch x:Name="ShowGregToggle"
+                                      Header="הצג תאריך לועזי מוקטן בכל תא"
+                                      OnContent="מופעל" OffContent="כבוי"/>
+                        <ToggleSwitch x:Name="ShowHebInTrayToggle"
+                                      Header="הצג תאריך עברי באייקון ה-tray"
+                                      OnContent="מופעל" OffContent="כבוי"/>
+                        <ToggleSwitch x:Name="CloseOnFocusLossToggle"
+                                      Header="סגור את חלונית ה-tray כשהיא מאבדת פוקוס"
+                                      OnContent="נסגרת אוטומטית בלחיצה מחוץ לחלונית"
+                                      OffContent="נסגרת רק בלחיצה על האייקון או על ה-X"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="הפעלה"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="8" Padding="4,8">
+                        <ToggleSwitch x:Name="StartupToggle"
+                                      Header="הפעל אוטומטית בעליית Windows"
+                                      OnContent="מופעל" OffContent="כבוי"/>
+                        <TextBlock Text="האפליקציה תתחיל באופן שקט (tray בלבד) בעליית המחשב."
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="זמני היום להצגה"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="6" Padding="4,8">
+                        <TextBlock Text="בחר אילו זמנים יוצגו בחלון זמני היום:"
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Margin="0,0,0,4"/>
+                        <StackPanel x:Name="ZmanimChecksPanel" Spacing="2"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="AboutExpander"
+                          Header="אודות"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="14" Padding="4,8">
+                        <StackPanel Orientation="Horizontal" Spacing="14">
+                            <Image x:Name="AboutIcon"
+                                   Width="56" Height="56"
+                                   VerticalAlignment="Top"/>
+                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="עיתים"
+                                           Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                                <TextBlock x:Name="AboutVersionText"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock Text="לוח שנה עברי חליפי לווינדוס, עם זמני היום הלכתיים"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <Image x:Name="AbayeLogo"
+                                   Width="40" Height="40"
+                                   VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center" Spacing="4">
+                                <TextBlock Text="פותח על ידי abaye"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                                <TextBlock Text="קוד פתוח · תרומות ודיווח על באגים מתקבלים בברכה"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           TextWrapping="Wrap"/>
+                                <HyperlinkButton Content="abaye.co"
+                                                 NavigateUri="https://abaye.co"
+                                                 Padding="0"
+                                                 Margin="0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <HyperlinkButton NavigateUri="https://github.com/abaye123/ItimHebrewCalendar">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Path Style="{StaticResource GitHubIconStyle}"
+                                          Data="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                    <TextBlock Text="abaye123/ItimHebrewCalendar"/>
+                                </StackPanel>
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/abaye123/ItimHebrewCalendar/issues">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Path Style="{StaticResource GitHubIconStyle}"
+                                          Data="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                    <TextBlock Text="דיווח על באג"/>
+                                </StackPanel>
+                            </HyperlinkButton>
+                        </StackPanel>
+
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="ספריות חיצוניות"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="זמני היום ההלכתיים: KosherJava Zmanim (ברירת מחדל)"
+                                           Style="{ThemeResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="מאת Eliyahu Hershfeld · פורק ל-.NET מאת Yitzchok ברישיון LGPL"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="לוח שנה, חגים ופרשות: hebcal-go"
+                                           Style="{ThemeResource BodyTextBlockStyle}"/>
+                                <TextBlock Text="מאת Michael Radwin · ברישיון GPL-2.0"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <HyperlinkButton NavigateUri="https://github.com/KosherJava/zmanim">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Path Style="{StaticResource GitHubIconStyle}"
+                                          Data="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                    <TextBlock Text="KosherJava"/>
+                                </StackPanel>
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/Yitzchok/Zmanim">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Path Style="{StaticResource GitHubIconStyle}"
+                                          Data="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                    <TextBlock Text="Zmanim .NET"/>
+                                </StackPanel>
+                            </HyperlinkButton>
+                            <HyperlinkButton NavigateUri="https://github.com/hebcal/hebcal-go">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <Path Style="{StaticResource GitHubIconStyle}"
+                                          Data="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                                    <TextBlock Text="hebcal-go"/>
+                                </StackPanel>
+                            </HyperlinkButton>
+                            <HyperlinkButton Content="hebcal.com"
+                                             NavigateUri="https://www.hebcal.com/"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <TextBlock x:Name="SettingsPathText"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                           Margin="4,12,4,0"
+                           Opacity="0.7"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="3"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="24,12">
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Left">
+                <Button x:Name="SaveButton"
+                        Content="שמור"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        MinWidth="110"
+                        Click="SaveButton_Click"/>
+                <Button x:Name="CancelButton"
+                        Content="ביטול"
+                        MinWidth="110"
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

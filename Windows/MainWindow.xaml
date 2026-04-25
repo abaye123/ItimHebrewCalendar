@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ItimHebrewCalendar.Windows.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ItimHebrewCalendar.Windows">
+
+    <Grid x:Name="RootGrid">
+        <Grid.Resources>
+            <Style x:Key="SubtleButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Background" Value="{ThemeResource SubtleFillColorTransparentBrush}"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="40">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="16,0,0,0">
+                <Image x:Name="TitleBarIcon" Width="18" Height="18" VerticalAlignment="Center"/>
+                <TextBlock Text="עיתים - לוח שנה עברי"
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: large calendar grid -->
+            <Grid Grid.Column="0" Margin="20,8,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border x:Name="TodayCard"
+                        Grid.Row="0"
+                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                        CornerRadius="10"
+                        Margin="0,0,0,16"
+                        Padding="20,16">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock x:Name="TxtTodayHebrew"
+                                   Style="{ThemeResource TitleTextBlockStyle}"
+                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Text="..."/>
+                        <TextBlock x:Name="TxtTodayGregorian"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                   Opacity="0.85"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0"
+                                   Text="..."/>
+                        <StackPanel x:Name="AfterSunsetPanel"
+                                    Orientation="Horizontal"
+                                    Spacing="6"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,4,0,0"
+                                    Visibility="Collapsed">
+                            <FontIcon Glyph="&#xE706;"
+                                      FontSize="14"
+                                      Foreground="#FFFFD080"/>
+                            <TextBlock Text="לאחר השקיעה"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <TextBlock x:Name="TxtTodayOmer"
+                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,6,0,0"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="1" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Style="{ThemeResource SubtleButtonStyle}"
+                            Click="OnPrevMonth"
+                            Width="40" Height="40"
+                            Padding="0">
+                        <FontIcon Glyph="&#xE76C;" FontSize="14"/>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Style="{ThemeResource SubtleButtonStyle}"
+                            Click="OnTodayClick"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="10,6">
+                        <StackPanel>
+                            <TextBlock x:Name="TxtMonthHeb"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtMonthGreg"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="2"
+                            Style="{ThemeResource SubtleButtonStyle}"
+                            Click="OnNextMonth"
+                            Width="40" Height="40"
+                            Padding="0">
+                        <FontIcon Glyph="&#xE76B;" FontSize="14"/>
+                    </Button>
+                </Grid>
+
+                <Grid Grid.Row="2" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                        <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="ראשון" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="1" Text="שני" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="2" Text="שלישי" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="3" Text="רביעי" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="4" Text="חמישי" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="5" Text="שישי" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <TextBlock Grid.Column="6" Text="שבת" HorizontalAlignment="Center" Style="{ThemeResource BodyStrongTextBlockStyle}" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                </Grid>
+
+                <Grid x:Name="DaysGrid" Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                        <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                        <RowDefinition Height="*" MinHeight="72"/>
+                    </Grid.RowDefinitions>
+                </Grid>
+
+                <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="6" Margin="0,12,0,0">
+                    <Button Content="היום"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Click="OnTodayClick"
+                            MinWidth="90"/>
+                    <Button Click="OnConverterClick" ToolTipService.ToolTip="ממיר תאריכים">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE787;" FontSize="13"/>
+                            <TextBlock Text="ממיר"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="OnSettingsClick" ToolTipService.ToolTip="הגדרות">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE713;" FontSize="13"/>
+                            <TextBlock Text="הגדרות"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Right: day details side panel -->
+            <Border Grid.Column="1"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                    BorderThickness="1,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            Background="{ThemeResource AccentFillColorDefaultBrush}"
+                            Padding="18,14">
+                        <StackPanel Spacing="3">
+                            <TextBlock x:Name="DetailsHebrew"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock x:Name="DetailsGregorian"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       Opacity="0.9"/>
+                            <TextBlock x:Name="DetailsDayOfWeek"
+                                       Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       Opacity="0.85"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" Padding="16,12" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="10">
+                            <StackPanel x:Name="DetailsEventsSection" Spacing="6" Visibility="Collapsed">
+                                <TextBlock Text="אירועים"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Margin="4,0,4,2"/>
+                                <StackPanel x:Name="DetailsEventsPanel" Spacing="6"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="DetailsZmanimSection" Spacing="6">
+                                <TextBlock Text="זמני היום"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Margin="4,6,4,2"/>
+                                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,4">
+                                    <StackPanel x:Name="DetailsZmanimPanel"/>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel x:Name="DetailsShabbatSection" Spacing="6">
+                                <TextBlock Text="שבת הקרובה"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Margin="4,6,4,2"/>
+                                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,10">
+                                    <StackPanel Spacing="3">
+                                        <TextBlock x:Name="TxtParasha"
+                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                        <TextBlock x:Name="TxtCandleLighting"
+                                                   Style="{ThemeResource BodyTextBlockStyle}"/>
+                                        <TextBlock x:Name="TxtHavdalah"
+                                                   Style="{ThemeResource BodyTextBlockStyle}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

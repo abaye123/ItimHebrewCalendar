@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ItimHebrewCalendar.Windows.DayDetailsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="36">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="14,0,0,0">
+                <Image Source="Assets/AppIcon.png" Width="16" Height="16" VerticalAlignment="Center"/>
+                <TextBlock Text="פרטי יום"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                CornerRadius="8"
+                Margin="16,4,16,12"
+                Padding="18,14">
+            <StackPanel Spacing="4">
+                <TextBlock x:Name="TxtHebrew"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"/>
+                <TextBlock x:Name="TxtGregorian"
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           HorizontalAlignment="Center"
+                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                           Opacity="0.85"/>
+                <TextBlock x:Name="TxtDayOfWeek"
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           HorizontalAlignment="Center"
+                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                           Opacity="0.85"/>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" Padding="16,0,16,16" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="10">
+
+                <StackPanel x:Name="EventsSection" Spacing="6" Visibility="Collapsed">
+                    <TextBlock Text="אירועים ביום זה"
+                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                               Margin="4,4,4,2"/>
+                    <StackPanel x:Name="EventsPanel" Spacing="6"/>
+                </StackPanel>
+
+                <StackPanel x:Name="ZmanimSection" Spacing="6">
+                    <TextBlock Text="זמני היום"
+                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                               Margin="4,8,4,2"/>
+                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="14,4">
+                        <StackPanel x:Name="ZmanimPanel"/>
+                    </Border>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
