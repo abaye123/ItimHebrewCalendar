@@ -4,11 +4,16 @@ obj/
 publish/
 Release/
 
-# Native DLL (נבנה מ-Go)
+# Native DLL built from Go.
 Resources/HebcalNative.dll
+Resources/HebcalNative.arm64.dll
 HebcalNative/lib/HebcalNative.dll
 HebcalNative/lib/HebcalNative.h
+HebcalNative/lib/HebcalNative.arm64.h
 HebcalNative/lib/go.sum
+
+# Bundled runtime installers downloaded by build.bat.
+Installer/Redist/
 
 # User settings
 *.user

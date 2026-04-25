@@ -49,8 +49,16 @@
     <Content Include="Assets\abaye.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <!-- Native hebcal-go DLL, built from the Go source under HebcalNative/lib. -->
-    <Content Include="Resources\HebcalNative.dll" Condition="Exists('Resources\HebcalNative.dll')">
+    <!-- Native hebcal-go DLL, built from the Go source under HebcalNative/lib.
+         Picks the right architecture-specific build per RuntimeIdentifier and
+         renames it to HebcalNative.dll in the output. -->
+    <Content Include="Resources\HebcalNative.dll"
+             Condition="'$(RuntimeIdentifier)' != 'win-arm64' And Exists('Resources\HebcalNative.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>HebcalNative.dll</Link>
+    </Content>
+    <Content Include="Resources\HebcalNative.arm64.dll"
+             Condition="'$(RuntimeIdentifier)' == 'win-arm64' And Exists('Resources\HebcalNative.arm64.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>HebcalNative.dll</Link>
     </Content>
