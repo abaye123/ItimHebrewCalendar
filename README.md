@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Assets/AppIcon.png" alt="ItimHebrewCalendar" width="128" height="128">
+</p>
+
 # עיתים — ItimHebrewCalendar
 
 לוח שנה עברי ל-Windows עם זמני היום ההלכתיים, בסגנון Fluent Design של Windows 11.
