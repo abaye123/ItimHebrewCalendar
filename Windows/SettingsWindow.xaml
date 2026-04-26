@@ -254,9 +254,9 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
                             <Image x:Name="AbayeLogo"
-                                   Width="40" Height="40"
+                                   Width="56" Height="56"
                                    VerticalAlignment="Center"/>
                             <StackPanel VerticalAlignment="Center" Spacing="4">
                                 <TextBlock Text="פותח על ידי abaye"
