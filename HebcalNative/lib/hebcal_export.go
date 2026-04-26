@@ -16,6 +16,8 @@ import (
 	"time"
 	"unsafe"
 
+	_ "time/tzdata" // embed IANA tzdata so the DLL is self-contained
+
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
