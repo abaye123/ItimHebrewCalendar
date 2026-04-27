@@ -21,6 +21,7 @@ namespace ItimHebrewCalendar.Services
             new() { Name = "טבריה", NameEn = "Tiberias", Latitude = 32.7922, Longitude = 35.5312, Elevation = -200, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 18 },
             new() { Name = "צפת", NameEn = "Safed", Latitude = 32.9650, Longitude = 35.4967, Elevation = 900, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 30 },
             new() { Name = "עפולה", NameEn = "Afula", Latitude = 32.6093, Longitude = 35.2894, Elevation = 60, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 18 },
+            new() { Name = "נוף הגליל", NameEn = "Nof HaGalil", Latitude = 32.7036, Longitude = 35.3033, Elevation = 500, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 40 },
             new() { Name = "בית שמש", NameEn = "Beit Shemesh", Latitude = 31.7488, Longitude = 34.9887, Elevation = 300, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 30 },
             new() { Name = "מודיעין", NameEn = "Modi'in", Latitude = 31.8942, Longitude = 35.0104, Elevation = 300, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 30 },
             new() { Name = "הרצליה", NameEn = "Herzliya", Latitude = 32.1663, Longitude = 34.8434, Elevation = 35, TimeZone = "Asia/Jerusalem", IsInIsrael = true, CandleLightingMinutes = 18 },
