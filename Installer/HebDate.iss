@@ -7,7 +7,7 @@
 
 #define AppName "ItimHebrewCalendar"
 #define AppNameH "עיתים - לוח שנה עברי"
-#define AppVersion "1.1.0"
+#define AppVersion "1.2.0"
 #define AppPublisher "abaye"
 #define AppExeName "ItimHebrewCalendar.exe"
 #define SourceFolder "..\bin\x64\Release\net8.0-windows10.0.19041.0"
@@ -31,6 +31,8 @@ PrivilegesRequired=admin
 MinVersion=10.0.17763
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+LicenseFile=".\license.txt"
+;InfoAfterFile=".\thanks.txt"
 UninstallDisplayIcon={app}\{#AppExeName}
 SetupIconFile=..\Assets\AppIcon.ico
 ShowLanguageDialog=auto
