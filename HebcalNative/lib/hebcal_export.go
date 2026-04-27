@@ -16,6 +16,8 @@ import (
 	"time"
 	"unsafe"
 
+	_ "time/tzdata"
+
 	"github.com/hebcal/hdate"
 	"github.com/hebcal/hebcal-go/event"
 	"github.com/hebcal/hebcal-go/hebcal"
