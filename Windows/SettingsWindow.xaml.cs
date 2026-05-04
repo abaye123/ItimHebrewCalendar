@@ -14,6 +14,7 @@ namespace ItimHebrewCalendar.Windows
     {
         private BackdropHandles? _backdrop;
         private readonly AppSettings _workingCopy;
+        private UpdateChecker.ReleaseInfo? _pendingUpdate;
 
         private readonly List<(ZmanimDisplay Flag, CheckBox Check)> _zmanimChecks = new();
 
@@ -304,6 +305,105 @@ namespace ItimHebrewCalendar.Windows
             finally
             {
                 DetectLocationButton.IsEnabled = true;
+            }
+        }
+
+        private async void CheckUpdatesButton_Click(object sender, RoutedEventArgs e)
+        {
+            CheckUpdatesButton.IsEnabled = false;
+            InstallUpdateButton.Visibility = Visibility.Collapsed;
+            _pendingUpdate = null;
+            UpdateStatusText.Text = "בודק עדכונים...";
+
+            try
+            {
+                var release = await UpdateChecker.GetLatestReleaseAsync();
+                var current = UpdateChecker.GetCurrentVersion();
+
+                if (release.ParsedVersion == null)
+                {
+                    UpdateStatusText.Text = $"לא ניתן לפרש את גרסת ה-Release ({release.TagName}).";
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(release.AssetUrl))
+                {
+                    UpdateStatusText.Text = $"גרסה {release.ParsedVersion} זמינה, אך לא נמצא קובץ התקנה ב-Release.";
+                    return;
+                }
+
+                if (UpdateChecker.IsNewer(current, release.ParsedVersion))
+                {
+                    var sizeMb = release.AssetSize / (1024.0 * 1024.0);
+                    UpdateStatusText.Text =
+                        $"זמינה גרסה חדשה: {release.ParsedVersion} (הנוכחית: {current}). " +
+                        $"קובץ ההתקנה: {release.AssetName} ({sizeMb:0.0} MB).";
+                    InstallUpdateButton.Visibility = Visibility.Visible;
+                    _pendingUpdate = release;
+                }
+                else
+                {
+                    UpdateStatusText.Text = $"אתה משתמש בגרסה העדכנית ביותר ({current}).";
+                }
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("SettingsWindow.CheckUpdates", ex);
+                UpdateStatusText.Text = $"שגיאה בבדיקת עדכונים: {ex.Message}";
+            }
+            finally
+            {
+                CheckUpdatesButton.IsEnabled = true;
+            }
+        }
+
+        private async void InstallUpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_pendingUpdate == null) return;
+
+            var confirm = new ContentDialog
+            {
+                Title = "התקנת עדכון",
+                Content = $"גרסה {_pendingUpdate.ParsedVersion} תורד ותותקן. " +
+                          "התוכנה תיסגר אוטומטית לפני ההתקנה. להמשיך?",
+                PrimaryButtonText = "המשך",
+                CloseButtonText = "ביטול",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = RootGrid.XamlRoot,
+                FlowDirection = FlowDirection.RightToLeft
+            };
+            if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
+
+            CheckUpdatesButton.IsEnabled = false;
+            InstallUpdateButton.IsEnabled = false;
+            UpdateProgressBar.Visibility = Visibility.Visible;
+            UpdateProgressBar.Value = 0;
+            UpdateStatusText.Text = "מוריד את קובץ ההתקנה...";
+
+            try
+            {
+                var progress = new Progress<double>(p =>
+                {
+                    UpdateProgressBar.Value = p;
+                    UpdateStatusText.Text = $"מוריד... {p * 100:0}%";
+                });
+
+                var installerPath = await UpdateChecker.DownloadAssetAsync(
+                    _pendingUpdate.AssetUrl, progress);
+
+                UpdateStatusText.Text = "מפעיל את ההתקנה...";
+                UpdateChecker.RunInstaller(installerPath, SilentUpdateToggle.IsOn);
+
+                // יציאה כדי שהמתקין יוכל להחליף קבצים נעולים.
+                Application.Current.Exit();
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("SettingsWindow.InstallUpdate", ex);
+                UpdateStatusText.Text = $"שגיאה: {ex.Message}";
+                UpdateProgressBar.Visibility = Visibility.Collapsed;
+                CheckUpdatesButton.IsEnabled = true;
+                InstallUpdateButton.IsEnabled = true;
             }
         }
     }

@@ -335,6 +335,38 @@
                             <HyperlinkButton Content="hebcal.com"
                                              NavigateUri="https://www.hebcal.com/"/>
                         </StackPanel>
+
+                        <Border Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                Height="1"
+                                Margin="0,4,0,4"/>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="עדכונים"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock x:Name="UpdateStatusText"
+                                       Text="לחץ 'בדוק עדכונים' כדי לראות אם זמינה גרסה חדשה."
+                                       Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+                            <ProgressBar x:Name="UpdateProgressBar"
+                                         Visibility="Collapsed"
+                                         Minimum="0" Maximum="1"/>
+                            <ToggleSwitch x:Name="SilentUpdateToggle"
+                                          Header="התקנה שקטה"
+                                          OnContent="ההתקנה תרוץ ברקע ללא חלונות"
+                                          OffContent="ההתקנה תוצג רגיל עם אישורים"
+                                          IsOn="True"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button x:Name="CheckUpdatesButton"
+                                        Click="CheckUpdatesButton_Click"
+                                        Content="בדוק עדכונים"/>
+                                <Button x:Name="InstallUpdateButton"
+                                        Click="InstallUpdateButton_Click"
+                                        Content="הורד והתקן"
+                                        Style="{ThemeResource AccentButtonStyle}"
+                                        Visibility="Collapsed"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </Expander>
 

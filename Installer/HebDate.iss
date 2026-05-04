@@ -60,16 +60,24 @@ Name: "{autodesktop}\{#AppNameH}"; Filename: "{app}\{#AppExeName}"; Tasks: deskt
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#AppName}"; ValueData: """{app}\{#AppExeName}"" --tray"; Tasks: startup; Flags: uninsdeletevalue
 
 [Run]
-; התקנת Windows App Runtime לפני הפעלת האפליקציה (אם נדרש)
+; התקנת Windows App Runtime לפני הפעלת האפליקציה (אם נדרש).
+; --quiet מבטיח שאין dialogs במהלך התקנה שקטה (עדכון אוטומטי).
 Filename: "{tmp}\WindowsAppRuntimeInstall-x64.exe"; \
     Parameters: "--quiet"; \
     StatusMsg: "מתקין את Windows App Runtime..."; \
     Check: NeedsWinAppRuntime; \
     Flags: waituntilterminated
 
+; הפעלה רגילה לאחר התקנה אינטראקטיבית (משתמש לוחץ סיום)
 Filename: "{app}\{#AppExeName}"; \
     Description: "{cm:LaunchProgram,{#AppName}}"; \
     Flags: nowait postinstall skipifsilent
+
+; הפעלה אוטומטית בסיום התקנה שקטה (עדכון מתוך האפליקציה).
+; runasoriginaluser מפעיל כמשתמש שיזם את העדכון, לא כ-Admin.
+Filename: "{app}\{#AppExeName}"; \
+    Flags: nowait runasoriginaluser; \
+    Check: WizardSilent
 
 [Code]
 function IsWinAppRuntimeInstalled: Boolean;
