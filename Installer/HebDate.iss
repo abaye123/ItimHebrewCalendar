@@ -7,7 +7,7 @@
 
 #define AppName "ItimHebrewCalendar"
 #define AppNameH "עיתים - לוח שנה עברי"
-#define AppVersion "1.2.0"
+#define AppVersion "1.3.0"
 #define AppPublisher "abaye"
 #define AppExeName "ItimHebrewCalendar.exe"
 #define SourceFolder "..\bin\x64\Release\net8.0-windows10.0.19041.0"

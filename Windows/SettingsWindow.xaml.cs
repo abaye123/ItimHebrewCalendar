@@ -173,11 +173,11 @@ namespace ItimHebrewCalendar.Windows
                 var version = asm.GetName().Version;
                 AboutVersionText.Text = version != null
                     ? $"גרסה {version.Major}.{version.Minor}.{version.Build}"
-                    : "גרסה 1.2.0";
+                    : "גרסה 1.3.0";
             }
             catch
             {
-                AboutVersionText.Text = "גרסה 1.2.0";
+                AboutVersionText.Text = "גרסה 1.3.0";
             }
 
             try
