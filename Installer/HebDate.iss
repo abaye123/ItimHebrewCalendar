@@ -14,13 +14,13 @@
 #define WinAppRuntimeInstaller "Redist\WindowsAppRuntimeInstall-x64.exe"
 
 [Setup]
-AppId={{7F2E4C1B-8A3D-4B6E-A5C9-1F8D7E2A9B4C}
+AppId={{7F2E4C1B-8A3D-4B6E-A5C9-1F8D7E2A9B4C}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
 AppSupportURL=https://github.com/abaye123/ItimHebrewCalendar
 DefaultDirName={autopf}\{#AppName}
-DefaultGroupName={#AppName}
+DefaultGroupName={#AppNameH}
 DisableProgramGroupPage=yes
 OutputDir=..\Release
 OutputBaseFilename=ItimHebrewCalendar-Setup-{#AppVersion}
