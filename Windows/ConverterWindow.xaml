@@ -38,12 +38,12 @@
                                Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <RadioButton x:Name="RadioGregToHeb"
-                                     Content="לועזי → עברי"
+                                     Content="לועזי > עברי"
                                      IsChecked="True"
                                      GroupName="Direction"
                                      Checked="Direction_Changed"/>
                         <RadioButton x:Name="RadioHebToGreg"
-                                     Content="עברי → לועזי"
+                                     Content="עברי > לועזי"
                                      GroupName="Direction"
                                      Checked="Direction_Changed"/>
                     </StackPanel>
