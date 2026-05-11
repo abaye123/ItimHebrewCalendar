@@ -45,7 +45,8 @@ namespace ItimHebrewCalendar.Services
     public enum TrayIconStyle
     {
         Tile,
-        TextOnly
+        TextOnly,
+        Classic
     }
 
     public class AppSettings

@@ -201,6 +201,7 @@
                                       HorizontalAlignment="Stretch">
                                 <ComboBoxItem Content="ריבוע צבעוני (Win11)" Tag="Tile"/>
                                 <ComboBoxItem Content="טקסט בלבד" Tag="TextOnly"/>
+                                <ComboBoxItem Content="דף לוח שנה (קלאסי)" Tag="Classic"/>
                             </ComboBox>
                         </StackPanel>
                         <ToggleSwitch x:Name="CloseOnFocusLossToggle"
