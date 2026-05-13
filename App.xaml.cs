@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using ItimHebrewCalendar.Services;
 using ItimHebrewCalendar.Windows;
@@ -16,6 +18,9 @@ namespace ItimHebrewCalendar
         // pumping after every visible window is closed - otherwise tray clicks queue
         // up but never run (TryEnqueue succeeds, the action never executes).
         private Window? _anchorWindow;
+
+        private EventWaitHandle? _showRequestEvent;
+        private RegisteredWaitHandle? _showRequestRegistration;
 
         public App()
         {
@@ -48,12 +53,45 @@ namespace ItimHebrewCalendar
             Tray = new TrayIconController();
             Tray.Initialize();
 
+            RegisterSecondInstanceListener();
+
             var cmdArgs = Environment.GetCommandLineArgs();
             bool silentStart = cmdArgs.Length > 1 && cmdArgs[1].Equals("--tray", StringComparison.OrdinalIgnoreCase);
             if (!silentStart)
             {
                 try { Tray.ShowMainWindow(); }
                 catch (Exception ex) { TryLogError(ex); }
+            }
+        }
+
+        // A second launch (desktop/start-menu shortcut click while we're already running)
+        // signals this event from Program.Main and exits. We respond by popping the main
+        // window so the click isn't a silent no-op.
+        private void RegisterSecondInstanceListener()
+        {
+            try
+            {
+                _showRequestEvent = new EventWaitHandle(
+                    false, EventResetMode.AutoReset, Program.ShowMainWindowEventName);
+
+                var dispatcher = DispatcherQueue.GetForCurrentThread();
+                _showRequestRegistration = ThreadPool.RegisterWaitForSingleObject(
+                    _showRequestEvent,
+                    (_, _) =>
+                    {
+                        dispatcher?.TryEnqueue(() =>
+                        {
+                            try { Tray?.ShowMainWindow(); }
+                            catch (Exception ex) { TryLogError(ex); }
+                        });
+                    },
+                    null,
+                    Timeout.Infinite,
+                    executeOnlyOnce: false);
+            }
+            catch (Exception ex)
+            {
+                TryLogError(ex);
             }
         }
 

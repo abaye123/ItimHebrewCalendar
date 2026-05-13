@@ -15,6 +15,11 @@ namespace ItimHebrewCalendar
         // Must match the Microsoft.WindowsAppSDK NuGet major.minor in the csproj.
         private static readonly uint RequiredMajorMinor = 0x00010007; // 1.7
 
+        // Cross-process signal: a second launch sets this event so the running
+        // instance can pop the main window instead of silently exiting.
+        public const string ShowMainWindowEventName =
+            "ItimHebrewCalendar_ShowMainWindow_Event_{B8F3A1C2-4E7D-4A3F-9C8D-2E1F0A9B7C6D}";
+
         [STAThread]
         public static int Main(string[] args)
         {
@@ -23,6 +28,14 @@ namespace ItimHebrewCalendar
                 out bool isNewInstance);
             if (!isNewInstance)
             {
+                try
+                {
+                    if (EventWaitHandle.TryOpenExisting(ShowMainWindowEventName, out var existing))
+                    {
+                        using (existing) existing.Set();
+                    }
+                }
+                catch { }
                 return 0;
             }
 
