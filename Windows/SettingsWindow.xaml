@@ -434,6 +434,11 @@
                             <ProgressBar x:Name="UpdateProgressBar"
                                          Visibility="Collapsed"
                                          Minimum="0" Maximum="1"/>
+                            <ToggleSwitch x:Name="AutoCheckUpdatesToggle"
+                                          Header="בדיקת עדכונים אוטומטית"
+                                          OnContent="בודק עדכונים פעם ביום ברקע"
+                                          OffContent="ידני בלבד"
+                                          IsOn="True"/>
                             <ToggleSwitch x:Name="SilentUpdateToggle"
                                           Header="התקנה שקטה"
                                           OnContent="ההתקנה תרוץ ברקע ללא חלונות"

@@ -120,6 +120,8 @@ namespace ItimHebrewCalendar.Windows
             WindowsCalendarSyncEnabled = original.WindowsCalendarSyncEnabled,
             IcsExportMonthsAhead = original.IcsExportMonthsAhead,
             MissedReminderLookbackHours = original.MissedReminderLookbackHours,
+            AutoCheckUpdates = original.AutoCheckUpdates,
+            LastUpdateCheckUtc = original.LastUpdateCheckUtc,
         };
 
         private void PopulateControls()
@@ -201,6 +203,7 @@ namespace ItimHebrewCalendar.Windows
             SelectComboByTag(DefaultMainViewCombo, _workingCopy.DefaultMainView.ToString());
             SelectComboByTag(DefaultTrayViewCombo, _workingCopy.DefaultTrayView.ToString());
             WindowsCalendarSyncToggle.IsOn = _workingCopy.WindowsCalendarSyncEnabled;
+            AutoCheckUpdatesToggle.IsOn = _workingCopy.AutoCheckUpdates;
             RebuildStandaloneRemindersUi();
 
             try
@@ -300,10 +303,12 @@ namespace ItimHebrewCalendar.Windows
                 _workingCopy.DefaultTrayView = tv;
 
             _workingCopy.WindowsCalendarSyncEnabled = WindowsCalendarSyncToggle.IsOn;
+            _workingCopy.AutoCheckUpdates = AutoCheckUpdatesToggle.IsOn;
 
             SettingsManager.Save(_workingCopy);
             App.Settings = _workingCopy;
             ReminderHostService.OnSettingsChanged();
+            UpdateCheckScheduler.OnSettingsChanged();
             StartupHelper.SetEnabled(_workingCopy.StartWithWindows);
 
             Close();
@@ -535,6 +540,11 @@ namespace ItimHebrewCalendar.Windows
                 var release = await UpdateChecker.GetLatestReleaseAsync();
                 var current = UpdateChecker.GetCurrentVersion();
 
+                // Treat the manual click as the latest check, so the background
+                // scheduler doesn't immediately re-check after the user just did.
+                App.Settings.LastUpdateCheckUtc = DateTime.UtcNow;
+                SettingsManager.Save(App.Settings);
+
                 if (release.ParsedVersion == null)
                 {
                     UpdateStatusText.Text = $"לא ניתן לפרש את גרסת ה-Release ({release.TagName}).";
@@ -609,8 +619,14 @@ namespace ItimHebrewCalendar.Windows
                 UpdateStatusText.Text = "מפעיל את ההתקנה...";
                 UpdateChecker.RunInstaller(installerPath, SilentUpdateToggle.IsOn);
 
-                // יציאה כדי שהמתקין יוכל להחליף קבצים נעולים.
-                Application.Current.Exit();
+                // Hard-exit so the installer can replace locked files AND so the
+                // post-install relaunch (runasoriginaluser in the .iss [Run]
+                // section) doesn't bounce off our single-instance mutex —
+                // Application.Current.Exit() alone leaves the tray / event
+                // listener / dispatcher keeping the process alive.
+                try { App.Tray?.Dispose(); } catch { }
+                try { Application.Current.Exit(); } catch { }
+                Environment.Exit(0);
             }
             catch (Exception ex)
             {

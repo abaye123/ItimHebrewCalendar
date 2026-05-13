@@ -57,6 +57,33 @@ namespace ItimHebrewCalendar.Services
             }
         }
 
+        // Surface a "new release available" toast from the auto-update checker.
+        public static void ShowUpdateAvailable(UpdateChecker.ReleaseInfo release)
+        {
+            EnsureRegistered();
+            try
+            {
+                var ver = release.ParsedVersion?.ToString() ?? release.TagName;
+                var title = "עדכון זמין";
+                var body = $"גרסה {ver} זמינה להורדה. פתח את ההגדרות כדי להתקין.";
+
+                var sb = new StringBuilder();
+                sb.Append("<toast>");
+                sb.Append("<visual><binding template='ToastGeneric'>");
+                sb.Append("<text>").Append(Esc(title)).Append("</text>");
+                sb.Append("<text>").Append(Esc(body)).Append("</text>");
+                sb.Append("<text placement='attribution'>עיתים</text>");
+                sb.Append("</binding></visual>");
+                sb.Append("</toast>");
+
+                AppNotificationManager.Default.Show(new AppNotification(sb.ToString()));
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("NotificationDispatcher.ShowUpdateAvailable", ex);
+            }
+        }
+
         // One-shot summary of reminders that fired while the app was off.
         public static void ShowMissedSummary(IReadOnlyList<ReminderOccurrence> missed)
         {

@@ -97,6 +97,11 @@ namespace ItimHebrewCalendar.Services
 
         public int MissedReminderLookbackHours { get; set; } = 24;
 
+        public bool AutoCheckUpdates { get; set; } = true;
+
+        // Stored as UTC; null = never checked.
+        public DateTime? LastUpdateCheckUtc { get; set; }
+
         public LocationInfo GetEffectiveLocation()
         {
             var city = CitiesDatabase.FindByName(CityName) ?? CitiesDatabase.Default;
