@@ -3,7 +3,8 @@
     x:Class="ItimHebrewCalendar.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ItimHebrewCalendar.Windows">
+    xmlns:local="using:ItimHebrewCalendar.Windows"
+    xmlns:controls="using:ItimHebrewCalendar.Windows.Controls">
 
     <Grid x:Name="RootGrid">
         <Grid.Resources>
@@ -112,11 +113,22 @@
                     </Button>
 
                     <Button Grid.Column="1"
+                            x:Name="MonthYearButton"
                             Style="{ThemeResource SubtleButtonStyle}"
-                            Click="OnTodayClick"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
-                            Padding="10,6">
+                            Padding="10,6"
+                            ToolTipService.ToolTip="מעבר לתאריך (Ctrl+G)">
+                        <Button.KeyboardAccelerators>
+                            <KeyboardAccelerator Modifiers="Control" Key="G"/>
+                        </Button.KeyboardAccelerators>
+                        <Button.Flyout>
+                            <Flyout Opening="OnMonthYearFlyoutOpening">
+                                <controls:HebrewMonthYearPicker x:Name="MonthYearPicker"
+                                                                Confirmed="OnMonthYearConfirmed"
+                                                                TodayRequested="OnMonthYearTodayRequested"/>
+                            </Flyout>
+                        </Button.Flyout>
                         <StackPanel>
                             <TextBlock x:Name="TxtMonthHeb"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"

@@ -424,6 +424,50 @@ namespace ItimHebrewCalendar.Windows
         private void OnNextMonth(object sender, RoutedEventArgs e) { StepHebMonth(+1); Refresh(); }
         private void OnTodayClick(object sender, RoutedEventArgs e) { SetCurrentHebMonthToToday(); Refresh(); }
 
+        private void OnMonthYearFlyoutOpening(object sender, object e)
+        {
+            MonthYearPicker.SetCurrent(_hebYear, _hebMonth);
+        }
+
+        private void OnMonthYearConfirmed(object sender, (int Year, int Month, int? Day) value)
+        {
+            _hebYear = value.Year;
+            _hebMonth = value.Month;
+            MonthYearButton.Flyout?.Hide();
+
+            // When a specific day was typed, jump straight into Daily view at that
+            // gregorian date — that's the cleanest way to "go to" an exact day.
+            if (value.Day.HasValue)
+            {
+                var greg = HebcalBridge.ConvertFromHebrew(value.Year, value.Month, value.Day.Value);
+                if (greg != null && greg.Year > 0)
+                {
+                    _dailyDate = new DateTime(greg.Year, greg.Month, greg.Day);
+                    if (DailyViewToggle.IsChecked != true)
+                    {
+                        // Flip the toggle state without going through ApplyViewMode(),
+                        // which would otherwise reset _dailyDate back to today.
+                        DailyViewToggle.IsChecked = true;
+                        MonthlyViewToggle.IsChecked = false;
+                        UpdateSegmentedHighlight();
+                        DailyContentGrid.Visibility = Visibility.Visible;
+                        MonthlyContentGrid.Visibility = Visibility.Collapsed;
+                    }
+                    RefreshDaily();
+                    return;
+                }
+            }
+
+            Refresh();
+        }
+
+        private void OnMonthYearTodayRequested(object sender, EventArgs e)
+        {
+            SetCurrentHebMonthToToday();
+            MonthYearButton.Flyout?.Hide();
+            Refresh();
+        }
+
         private void OnConverterClick(object sender, RoutedEventArgs e)
         {
             new ConverterWindow().Activate();

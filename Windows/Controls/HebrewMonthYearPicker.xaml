@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ItimHebrewCalendar.Windows.Controls.HebrewMonthYearPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    FlowDirection="RightToLeft">
+
+    <StackPanel Spacing="10" Padding="14,12" MinWidth="280">
+        <TextBlock Text="מעבר לתאריך"
+                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,4"/>
+
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0"
+                      x:Name="CmbMonth"
+                      Header="חודש"
+                      HorizontalAlignment="Stretch"
+                      DisplayMemberPath="Name"/>
+
+            <AutoSuggestBox Grid.Column="1"
+                            x:Name="TxtYear"
+                            Header="שנה"
+                            HorizontalAlignment="Stretch"
+                            UpdateTextOnSelect="True"
+                            PlaceholderText="הקלד / בחר"
+                            TextChanged="OnYearTextChanged"
+                            SuggestionChosen="OnYearSuggestionChosen"
+                            QuerySubmitted="OnYearQuerySubmitted"
+                            GotFocus="OnYearGotFocus"/>
+        </Grid>
+
+        <NumberBox x:Name="NbDay"
+                   Header="יום (אופציונלי)"
+                   Minimum="1"
+                   Maximum="30"
+                   SpinButtonPlacementMode="Compact"
+                   PlaceholderText="ללא יום ספציפי"
+                   ValidationMode="InvalidInputOverwritten"/>
+
+        <Grid ColumnSpacing="8" Margin="0,4,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="היום"
+                    HorizontalAlignment="Stretch"
+                    Click="OnTodayClick"/>
+
+            <Button Grid.Column="1"
+                    x:Name="GoButton"
+                    Content="עבור"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    HorizontalAlignment="Stretch"
+                    Click="OnGoClick"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

@@ -423,6 +423,43 @@ namespace ItimHebrewCalendar.Windows
             Refresh();
         }
 
+        private void OnMonthYearFlyoutOpening(object sender, object e)
+        {
+            MonthYearPicker.SetCurrent(_hebYear, _hebMonth);
+        }
+
+        private void OnMonthYearConfirmed(object sender, (int Year, int Month, int? Day) value)
+        {
+            _hebYear = value.Year;
+            _hebMonth = value.Month;
+            MonthYearButton.Flyout?.Hide();
+            Refresh();
+
+            // If the user typed a specific day, open Day Details for it so the
+            // "go to date" flow lands on the exact day rather than just the month.
+            if (value.Day.HasValue)
+            {
+                var greg = HebcalBridge.ConvertFromHebrew(value.Year, value.Month, value.Day.Value);
+                if (greg != null && greg.Year > 0)
+                {
+                    var date = new DateTime(greg.Year, greg.Month, greg.Day);
+                    var settings = App.Settings;
+                    var monthData = HebcalBridge.GetMonth(date.Year, date.Month,
+                        settings.UseIsraeliHolidays, settings.ShowModernHolidays);
+                    var dayData = monthData?.Days.FirstOrDefault(d =>
+                        d.GregYear == date.Year && d.GregMonth == date.Month && d.GregDay == date.Day);
+                    if (dayData != null) ShowDayDetails(dayData);
+                }
+            }
+        }
+
+        private void OnMonthYearTodayRequested(object sender, EventArgs e)
+        {
+            SetCurrentHebMonthToToday();
+            MonthYearButton.Flyout?.Hide();
+            Refresh();
+        }
+
         private void ApplyHeight(int height)
         {
             if (height == _currentHeight) return;
