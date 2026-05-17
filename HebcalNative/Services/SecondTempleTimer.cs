@@ -120,13 +120,42 @@ namespace ItimHebrewCalendar.Services
             return date.Date.Add(t);
         }
 
+        // Compute month length as the gregorian span from day 1 of this Hebrew month
+        // to day 1 of the next. Probing day 30 directly would panic in the Go layer
+        // for months that always have 29 days (Iyar, Tamuz, Tevet, Elul, Adar II).
         private static int DaysInHebrewMonth(int year, int month)
         {
-            var greg30 = HebcalBridge.ConvertFromHebrew(year, month, 30);
-            if (greg30 == null) return 29;
-            var heb = HebcalBridge.Convert(new DateTime(greg30.Year, greg30.Month, greg30.Day));
-            return (heb != null && heb.HebMonth == month) ? 30 : 29;
+            try
+            {
+                var (nextYear, nextMonth) = NextHebrewMonth(year, month);
+                var g1 = HebcalBridge.ConvertFromHebrew(year, month, 1);
+                var g2 = HebcalBridge.ConvertFromHebrew(nextYear, nextMonth, 1);
+                if (g1 == null || g2 == null || g1.Year == 0 || g2.Year == 0) return 29;
+                var d1 = new DateTime(g1.Year, g1.Month, g1.Day);
+                var d2 = new DateTime(g2.Year, g2.Month, g2.Day);
+                var days = (int)(d2 - d1).TotalDays;
+                return days is 29 or 30 ? days : 29;
+            }
+            catch
+            {
+                return 29;
+            }
         }
+
+        // Hebcal month numbering: 1=Nisan ... 6=Elul (end of civil year),
+        // 7=Tishrei (start of next civil year) ... 12=Adar (or Adar I in leap),
+        // 13=Adar II (leap only).
+        private static (int year, int month) NextHebrewMonth(int year, int month)
+        {
+            if (month == 6) return (year + 1, 7);            // Elul -> Tishrei
+            if (month == 12)
+                return IsHebrewLeapYear(year) ? (year, 13)   // Adar I -> Adar II
+                                              : (year, 1);   // Adar  -> Nisan
+            if (month == 13) return (year, 1);               // Adar II -> Nisan
+            return (year, month + 1);
+        }
+
+        private static bool IsHebrewLeapYear(int year) => (7 * year + 1) % 19 < 7;
 
         // "חלפו 1955 שנים, 9 חודשים ו-27 ימים מחורבן הבית"
         public static string FormatCompact(SecondTempleInterval i)
