@@ -20,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid x:Name="AppTitleBar" Grid.Row="0" Height="36">
@@ -249,36 +250,6 @@
                 </StackPanel>
             </Border>
 
-            <Grid Grid.Row="6"
-                  Background="{ThemeResource LayerFillColorDefaultBrush}"
-                  Padding="14,8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <Button Grid.Column="0"
-                        Content="היום"
-                        Style="{ThemeResource AccentButtonStyle}"
-                        Click="OnTodayClick"
-                        HorizontalAlignment="Left"
-                        MinWidth="80"/>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                    <Button Click="OnOpenMainWindow" ToolTipService.ToolTip="פתח חלון מלא">
-                        <FontIcon Glyph="&#xE787;" FontSize="14"/>
-                    </Button>
-                    <Button Click="OnZmanimClick" ToolTipService.ToolTip="זמני היום">
-                        <FontIcon Glyph="&#xE706;" FontSize="14"/>
-                    </Button>
-                    <Button Click="OnConverterClick" ToolTipService.ToolTip="ממיר תאריכים">
-                        <FontIcon Glyph="&#xE8AB;" FontSize="14"/>
-                    </Button>
-                    <Button Click="OnSettingsClick" ToolTipService.ToolTip="הגדרות">
-                        <FontIcon Glyph="&#xE713;" FontSize="14"/>
-                    </Button>
-                </StackPanel>
-            </Grid>
         </Grid>
 
         <Grid x:Name="DetailsView" Grid.Row="2" Visibility="Collapsed">
@@ -431,6 +402,40 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+        </Grid>
+
+        <!-- Shared bottom toolbar: visible in both monthly and daily views
+             (hidden only in the day-details drill-down, which has its own back button). -->
+        <Grid x:Name="BottomBar"
+              Grid.Row="3"
+              Background="{ThemeResource LayerFillColorDefaultBrush}"
+              Padding="14,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="היום"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Click="OnTodayClick"
+                    HorizontalAlignment="Left"
+                    MinWidth="80"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                <Button Click="OnOpenMainWindow" ToolTipService.ToolTip="פתח חלון מלא">
+                    <FontIcon Glyph="&#xE787;" FontSize="14"/>
+                </Button>
+                <Button Click="OnZmanimClick" ToolTipService.ToolTip="זמני היום">
+                    <FontIcon Glyph="&#xE706;" FontSize="14"/>
+                </Button>
+                <Button Click="OnConverterClick" ToolTipService.ToolTip="ממיר תאריכים">
+                    <FontIcon Glyph="&#xE8AB;" FontSize="14"/>
+                </Button>
+                <Button Click="OnSettingsClick" ToolTipService.ToolTip="הגדרות">
+                    <FontIcon Glyph="&#xE713;" FontSize="14"/>
+                </Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

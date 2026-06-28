@@ -21,10 +21,10 @@ namespace ItimHebrewCalendar.Windows
         private BackdropHandles? _backdrop;
 
         private const int BaseHeight = 640;
-        private const int OmerExtraHeight = 32;
-        private const int AfterSunsetExtraHeight = 28;
-        private const int TempleExtraHeight = 40;
+        private const int PopupWidth = 380;
         private int _currentHeight = -1;
+        private bool _monthBuilt;
+        private bool _loaded;
         private DateTime _halachicTodayDate = DateTime.Today;
         private Brush? _defaultTodayCardBrush;
         private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush SunsetCardBrush =
@@ -40,6 +40,7 @@ namespace ItimHebrewCalendar.Windows
 
             WindowHelpers.LoadAppIconInto(TitleBarIcon);
             _defaultTodayCardBrush = TodayCard.Background;
+            RootGrid.Loaded += OnRootLoaded;
 
             SetCurrentHebMonthToToday();
             Title = "עיתים - לוח שנה עברי";
@@ -146,11 +147,6 @@ namespace ItimHebrewCalendar.Windows
                         TxtTempleTimer.Visibility = Visibility.Collapsed;
                     }
 
-                    int targetHeight = BaseHeight;
-                    if (showOmer) targetHeight += OmerExtraHeight;
-                    if (afterSunset) targetHeight += AfterSunsetExtraHeight;
-                    if (showTemple) targetHeight += TempleExtraHeight;
-                    ApplyHeight(targetHeight);
                 }
 
                 var month = HebcalBridge.GetHebrewMonth(_hebYear, _hebMonth,
@@ -168,6 +164,9 @@ namespace ItimHebrewCalendar.Windows
                     TxtCandleLighting.Text = string.IsNullOrEmpty(shabbat.CandleLighting) ? "" : $"הדלקת נרות: {shabbat.CandleLighting}";
                     TxtHavdalah.Text = string.IsNullOrEmpty(shabbat.Havdalah) ? "" : $"הבדלה: {shabbat.Havdalah}";
                 }
+
+                _monthBuilt = true;
+                AdjustHeightForCurrentView();
             }
             catch (Exception ex)
             {
@@ -378,6 +377,7 @@ namespace ItimHebrewCalendar.Windows
 
             CalendarView.Visibility = Visibility.Collapsed;
             DetailsView.Visibility = Visibility.Visible;
+            BottomBar.Visibility = Visibility.Collapsed;
         }
 
         private void BuildUserEventDateIndex(MonthlyCalendar? month)
@@ -402,6 +402,7 @@ namespace ItimHebrewCalendar.Windows
         {
             DetailsView.Visibility = Visibility.Collapsed;
             CalendarView.Visibility = Visibility.Visible;
+            BottomBar.Visibility = Visibility.Visible;
         }
 
         private void OnPrevMonth(object sender, RoutedEventArgs e)
@@ -463,8 +464,66 @@ namespace ItimHebrewCalendar.Windows
         {
             if (height == _currentHeight) return;
             _currentHeight = height;
-            WindowHelpers.Resize(this, 380, height);
+            WindowHelpers.Resize(this, PopupWidth, height);
             WindowHelpers.PositionNearTray(this);
+        }
+
+        // The monthly view has no internal scroll, so the window must be tall enough
+        // to show all of its content — otherwise the bottom toolbar is clipped. This
+        // happens for users with Windows text-scaling > 100% or longer date strings.
+        // Measuring the real content height (instead of a fixed constant) keeps the
+        // toolbar visible regardless of scaling, font, or wrapping. The daily/details
+        // views scroll internally, so they keep a fixed height.
+        private void OnRootLoaded(object sender, RoutedEventArgs e)
+        {
+            _loaded = true;
+            // Defer one tick so the first real layout pass (with final fonts/scaling)
+            // has completed before we measure.
+            DispatcherQueue.TryEnqueue(AdjustHeightForCurrentView);
+        }
+
+        private void AdjustHeightForCurrentView()
+        {
+            // Before the content is loaded a measurement would be inaccurate; keep the
+            // base height until OnRootLoaded re-runs this with a laid-out tree.
+            if (!_loaded)
+            {
+                ApplyHeight(BaseHeight);
+                return;
+            }
+
+            if (CalendarView.Visibility == Visibility.Visible)
+                ApplyHeight(MeasureMonthlyHeight());
+            else
+                ApplyHeight(BaseHeight);
+        }
+
+        private int MeasureMonthlyHeight()
+        {
+            try
+            {
+                RootGrid.Measure(new global::Windows.Foundation.Size(PopupWidth, double.PositiveInfinity));
+                int desired = (int)Math.Ceiling(RootGrid.DesiredSize.Height) + 2;
+
+                // Never grow past the screen work area.
+                double scale = RootGrid.XamlRoot?.RasterizationScale ?? 1.0;
+                var appWin = WindowHelpers.GetAppWindow(this);
+                if (appWin != null && scale > 0)
+                {
+                    var area = DisplayArea.GetFromWindowId(appWin.Id, DisplayAreaFallback.Primary);
+                    if (area != null)
+                    {
+                        int maxDip = (int)(area.WorkArea.Height / scale) - 24;
+                        if (maxDip > 0 && desired > maxDip) desired = maxDip;
+                    }
+                }
+                return desired > 0 ? desired : BaseHeight;
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("CalendarPopup.MeasureMonthlyHeight", ex);
+                return BaseHeight;
+            }
         }
 
         private void SetCurrentHebMonthToToday()
@@ -564,10 +623,18 @@ namespace ItimHebrewCalendar.Windows
             CalendarView.Visibility = daily ? Visibility.Collapsed : Visibility.Visible;
             DetailsView.Visibility  = Visibility.Collapsed;
             DailyView.Visibility    = daily ? Visibility.Visible : Visibility.Collapsed;
+            BottomBar.Visibility    = Visibility.Visible;
             if (daily)
             {
                 _dailyDate = _halachicTodayDate;
+                ApplyHeight(BaseHeight);
                 RefreshDaily();
+            }
+            else if (_monthBuilt)
+            {
+                // Re-measure: switching back to the monthly view must restore its
+                // content-fitted height (the daily view used a fixed height).
+                AdjustHeightForCurrentView();
             }
         }
 

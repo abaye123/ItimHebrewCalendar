@@ -37,7 +37,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left: large calendar grid -->
-            <Grid Grid.Column="0" Margin="20,8,20,8">
+            <Grid x:Name="MonthlyLeftColumn" Grid.Column="0" Margin="20,8,20,8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -350,7 +350,7 @@
         <!-- Shared bottom toolbar: visible in both monthly and daily views.
              RTL flow puts Column 0 visually on the right (actions) and
              Column 2 visually on the left (view selector) — opposite ends. -->
-        <Grid Grid.Row="2" Margin="20,4,20,16">
+        <Grid x:Name="BottomBar" Grid.Row="2" Margin="20,4,20,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>

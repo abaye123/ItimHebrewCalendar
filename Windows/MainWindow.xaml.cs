@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,10 +24,11 @@ namespace ItimHebrewCalendar.Windows
         private BackdropHandles? _backdrop;
 
         private const int BaseHeight = 730;
-        private const int OmerExtraHeight = 32;
-        private const int AfterSunsetExtraHeight = 32;
-        private const int TempleExtraHeight = 32;
+        private const int WindowWidth = 980;
+        private const int DetailsPanelWidth = 340;
         private int _currentHeight = -1;
+        private bool _monthBuilt;
+        private bool _loaded;
         private DateTime _halachicTodayDate = DateTime.Today;
         private Brush? _defaultTodayCardBrush;
         private static readonly Microsoft.UI.Xaml.Media.SolidColorBrush SunsetCardBrush =
@@ -42,6 +44,7 @@ namespace ItimHebrewCalendar.Windows
 
             WindowHelpers.LoadAppIconInto(TitleBarIcon);
             _defaultTodayCardBrush = TodayCard.Background;
+            RootGrid.Loaded += OnRootLoaded;
 
             SetCurrentHebMonthToToday();
             Title = "עיתים - לוח שנה עברי";
@@ -136,11 +139,6 @@ namespace ItimHebrewCalendar.Windows
                         TxtTempleTimer.Visibility = Visibility.Collapsed;
                     }
 
-                    int targetHeight = BaseHeight;
-                    if (showOmer) targetHeight += OmerExtraHeight;
-                    if (afterSunset) targetHeight += AfterSunsetExtraHeight;
-                    if (showTemple) targetHeight += TempleExtraHeight;
-                    ApplyHeight(targetHeight);
                 }
 
                 var month = HebcalBridge.GetHebrewMonth(_hebYear, _hebMonth,
@@ -161,6 +159,9 @@ namespace ItimHebrewCalendar.Windows
                     TxtCandleLighting.Text = string.IsNullOrEmpty(shabbat.CandleLighting) ? "" : $"הדלקת נרות: {shabbat.CandleLighting}";
                     TxtHavdalah.Text = string.IsNullOrEmpty(shabbat.Havdalah) ? "" : $"הבדלה: {shabbat.Havdalah}";
                 }
+
+                _monthBuilt = true;
+                AdjustHeightForCurrentView();
             }
             catch (Exception ex)
             {
@@ -413,7 +414,66 @@ namespace ItimHebrewCalendar.Windows
         {
             if (height == _currentHeight) return;
             _currentHeight = height;
-            WindowHelpers.Resize(this, 980, height);
+            WindowHelpers.Resize(this, WindowWidth, height);
+        }
+
+        private void OnRootLoaded(object sender, RoutedEventArgs e)
+        {
+            _loaded = true;
+            DispatcherQueue.TryEnqueue(AdjustHeightForCurrentView);
+        }
+
+        // Size the window to the measured content so nothing is clipped at higher
+        // Windows text-scaling. We measure only the (day-independent) left calendar
+        // column, not the details panel — that panel scrolls and its height changes
+        // per selected day, which would otherwise resize the window on every click.
+        private void AdjustHeightForCurrentView()
+        {
+            if (!_loaded || !_monthBuilt)
+            {
+                ApplyHeight(BaseHeight);
+                return;
+            }
+
+            if (MonthlyContentGrid.Visibility == Visibility.Visible)
+                ApplyHeight(MeasureMonthlyHeight());
+            else
+                ApplyHeight(BaseHeight);
+        }
+
+        private int MeasureMonthlyHeight()
+        {
+            try
+            {
+                double leftWidth = WindowWidth - DetailsPanelWidth;
+                MonthlyLeftColumn.Measure(new global::Windows.Foundation.Size(leftWidth, double.PositiveInfinity));
+                BottomBar.Measure(new global::Windows.Foundation.Size(WindowWidth, double.PositiveInfinity));
+
+                double titleBar = AppTitleBar.ActualHeight > 0 ? AppTitleBar.ActualHeight : 40;
+                // The measured elements exclude their own Margins (left 8+8, bar 4+16).
+                double desiredD = titleBar
+                    + MonthlyLeftColumn.DesiredSize.Height + 16
+                    + BottomBar.DesiredSize.Height + 20;
+                int desired = (int)Math.Ceiling(desiredD) + 4;
+
+                double scale = RootGrid.XamlRoot?.RasterizationScale ?? 1.0;
+                var appWin = WindowHelpers.GetAppWindow(this);
+                if (appWin != null && scale > 0)
+                {
+                    var area = DisplayArea.GetFromWindowId(appWin.Id, DisplayAreaFallback.Primary);
+                    if (area != null)
+                    {
+                        int maxDip = (int)(area.WorkArea.Height / scale) - 24;
+                        if (maxDip > 0 && desired > maxDip) desired = maxDip;
+                    }
+                }
+                return desired > 0 ? desired : BaseHeight;
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("MainWindow.MeasureMonthlyHeight", ex);
+                return BaseHeight;
+            }
         }
 
         private void SetCurrentHebMonthToToday()
@@ -552,7 +612,12 @@ namespace ItimHebrewCalendar.Windows
             if (daily)
             {
                 _dailyDate = _halachicTodayDate;
+                ApplyHeight(BaseHeight);
                 RefreshDaily();
+            }
+            else if (_monthBuilt)
+            {
+                AdjustHeightForCurrentView();
             }
         }
 
