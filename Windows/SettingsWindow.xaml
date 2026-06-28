@@ -58,7 +58,6 @@
 
                 <Expander x:Name="AppearanceExpander"
                           Header="מראה"
-                          IsExpanded="True"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch">
                     <StackPanel Spacing="8" Padding="4,8">
@@ -96,7 +95,6 @@
 
                 <Expander x:Name="LocationExpander"
                           Header="מיקום"
-                          IsExpanded="True"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch">
                     <StackPanel Spacing="8" Padding="4,8">
@@ -126,7 +124,6 @@
 
                 <Expander x:Name="HolidaysExpander"
                           Header="חגים וזמנים"
-                          IsExpanded="True"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch">
                     <StackPanel Spacing="12" Padding="4,8">
