@@ -19,6 +19,7 @@ namespace ItimHebrewCalendar.Windows
         private int _hebYear;
         private int _hebMonth;
         private CalendarDay? _selectedDay;
+        private Border? _selectedBorder;
         private BackdropHandles? _backdrop;
 
         private const int BaseHeight = 730;
@@ -199,6 +200,7 @@ namespace ItimHebrewCalendar.Windows
         private void DrawDaysGrid(MonthlyCalendar month, bool showGreg)
         {
             DaysGrid.Children.Clear();
+            _selectedBorder = null;
             if (month.Days.Count == 0) return;
 
             int startCol = month.Days[0].DayOfWeek;
@@ -313,7 +315,7 @@ namespace ItimHebrewCalendar.Windows
             }
 
             border.Child = sp;
-            border.PointerReleased += (_, _) => SelectDay(day);
+            border.PointerReleased += (s, _) => SelectDay(day, s as Border);
             border.PointerEntered += (s, _) =>
             {
                 if (s is Border b && !isToday && (_selectedDay != day))
@@ -336,9 +338,31 @@ namespace ItimHebrewCalendar.Windows
             return CellTheme.NormalBackground();
         }
 
-        private void SelectDay(CalendarDay day)
+        private void SelectDay(CalendarDay day, Border? border = null)
         {
             _selectedDay = day;
+
+            // Move the gray selection highlight to the clicked cell. Only when a cell
+            // was actually clicked — programmatic selects keep the current highlight.
+            if (border != null)
+            {
+                bool isDark = ThemeHelper.IsEffectivelyDark(App.Settings.Theme);
+
+                // Un-highlight the previously selected cell so only one stays gray.
+                if (_selectedBorder != null && _selectedBorder != border &&
+                    _selectedBorder.Tag is CalendarDay prev && prev.Date.Date != _halachicTodayDate)
+                {
+                    _selectedBorder.Background = GetCellBackground(isDark, isToday: false,
+                        prev.Events.Any(e => e.IsHoliday || e.IsMajor), prev.IsShabbat);
+                }
+
+                _selectedBorder = border;
+
+                // Highlight the newly selected cell (today already has its own accent styling).
+                if (day.Date.Date != _halachicTodayDate)
+                    border.Background = CellTheme.HoverBackground(isDark);
+            }
+
             DayDetailsRenderer.Render(day, new DayDetailsRenderer.Targets
             {
                 HebrewLabel = DetailsHebrew,
