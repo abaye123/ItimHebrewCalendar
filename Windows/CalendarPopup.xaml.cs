@@ -116,9 +116,8 @@ namespace ItimHebrewCalendar.Windows
                 _halachicTodayDate = DateTime.Today.AddDays(afterSunset ? 1 : 0);
                 if (today != null)
                 {
-                    TxtTodayHebrew.Text = $"{today.DayStr} ב{today.MonthName} {today.YearStr}";
-                    TxtTodayGregorian.Text = DateTime.Now.ToString("dddd, d בMMMM yyyy",
-                        CultureInfo.GetCultureInfo("he-IL"));
+                    TxtTodayHebrew.Text = HebrewDateFormatter.Full(today.Day, today.MonthName, today.Year, App.Settings.DateFormat);
+                    TxtTodayGregorian.Text = HebrewDateFormatter.Gregorian(DateTime.Now, App.Settings.DateFormat);
                     AfterSunsetPanel.Visibility = afterSunset ? Visibility.Visible : Visibility.Collapsed;
 
                     TodayCard.Background = afterSunset ? SunsetCardBrush : _defaultTodayCardBrush;
@@ -183,7 +182,7 @@ namespace ItimHebrewCalendar.Windows
             var first = month.Days[0];
             var last = month.Days[^1];
 
-            TxtMonthHeb.Text = $"{first.HebMonthName} {HebrewNumberFormatter.FormatYear(first.HebYear)}";
+            TxtMonthHeb.Text = HebrewDateFormatter.MonthYear(first.HebMonthName, first.HebYear, App.Settings.DateFormat);
 
             var ci = CultureInfo.GetCultureInfo("he-IL");
             string gregSpan;
@@ -258,7 +257,7 @@ namespace ItimHebrewCalendar.Windows
 
             var tbHeb = new TextBlock
             {
-                Text = day.HebDayStr,
+                Text = HebrewDateFormatter.Day(day.HebDay, App.Settings.DateFormat),
                 FontSize = 14,
                 FontWeight = isToday || isShabbat ? Microsoft.UI.Text.FontWeights.SemiBold : Microsoft.UI.Text.FontWeights.Normal,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -344,8 +343,8 @@ namespace ItimHebrewCalendar.Windows
         {
             var parts = new System.Collections.Generic.List<string>
             {
-                $"{day.HebDayStr} ב{day.HebMonthName} {HebrewNumberFormatter.FormatYear(day.HebYear)}",
-                day.Date.ToString("dddd, d בMMMM yyyy", CultureInfo.GetCultureInfo("he-IL"))
+                HebrewDateFormatter.Full(day.HebDay, day.HebMonthName, day.HebYear, App.Settings.DateFormat),
+                HebrewDateFormatter.Gregorian(day.Date, App.Settings.DateFormat)
             };
             foreach (var e in day.Events)
             {
@@ -609,8 +608,8 @@ namespace ItimHebrewCalendar.Windows
                 var hd = HebcalBridge.Convert(_dailyDate);
                 if (hd == null) return;
 
-                var headerHeb  = $"{HebrewNumberFormatter.FormatDay(hd.HebDay)} ב{hd.MonthName} {HebrewNumberFormatter.FormatYear(hd.HebYear)}";
-                var headerGreg = _dailyDate.ToString("d בMMMM yyyy", ci);
+                var headerHeb  = HebrewDateFormatter.Full(hd.HebDay, hd.MonthName, hd.HebYear, App.Settings.DateFormat);
+                var headerGreg = HebrewDateFormatter.GregorianNoWeekday(_dailyDate, App.Settings.DateFormat);
                 DailyHeaderHeb.Text  = headerHeb;
                 DailyHeaderGreg.Text = $"{_dailyDate.ToString("dddd", ci)} · {headerGreg}";
 

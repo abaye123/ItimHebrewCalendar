@@ -122,6 +122,15 @@ namespace ItimHebrewCalendar.Windows
             MissedReminderLookbackHours = original.MissedReminderLookbackHours,
             AutoCheckUpdates = original.AutoCheckUpdates,
             LastUpdateCheckUtc = original.LastUpdateCheckUtc,
+            DateFormat = new HebrewDateFormatOptions
+            {
+                UseGershayim = original.DateFormat.UseGershayim,
+                UseBetPrefix = original.DateFormat.UseBetPrefix,
+                UseComma = original.DateFormat.UseComma,
+                MonthSpelling = original.DateFormat.MonthSpelling,
+                YearStyle = original.DateFormat.YearStyle,
+                GregStyle = original.DateFormat.GregStyle,
+            },
         };
 
         private void PopulateControls()
@@ -199,6 +208,14 @@ namespace ItimHebrewCalendar.Windows
                 _zmanimChecks.Add((opt.Flag, cb));
                 ZmanimChecksPanel.Children.Add(cb);
             }
+
+            GershayimToggle.IsOn = _workingCopy.DateFormat.UseGershayim;
+            BetPrefixToggle.IsOn = _workingCopy.DateFormat.UseBetPrefix;
+            CommaToggle.IsOn = _workingCopy.DateFormat.UseComma;
+            SelectComboByTag(MonthSpellingCombo, _workingCopy.DateFormat.MonthSpelling.ToString());
+            SelectComboByTag(YearStyleCombo, _workingCopy.DateFormat.YearStyle.ToString());
+            SelectComboByTag(GregStyleCombo, _workingCopy.DateFormat.GregStyle.ToString());
+            RefreshDateFormatPreview();
 
             SelectComboByTag(DefaultMainViewCombo, _workingCopy.DefaultMainView.ToString());
             SelectComboByTag(DefaultTrayViewCombo, _workingCopy.DefaultTrayView.ToString());
@@ -304,6 +321,7 @@ namespace ItimHebrewCalendar.Windows
 
             _workingCopy.WindowsCalendarSyncEnabled = WindowsCalendarSyncToggle.IsOn;
             _workingCopy.AutoCheckUpdates = AutoCheckUpdatesToggle.IsOn;
+            _workingCopy.DateFormat = ReadDateFormatFromControls();
 
             SettingsManager.Save(_workingCopy);
             App.Settings = _workingCopy;
@@ -315,6 +333,41 @@ namespace ItimHebrewCalendar.Windows
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
+
+        // ─── Date format ───────────────────────────────────────────────────────────
+
+        private HebrewDateFormatOptions ReadDateFormatFromControls()
+        {
+            var o = new HebrewDateFormatOptions
+            {
+                UseGershayim = GershayimToggle.IsOn,
+                UseBetPrefix = BetPrefixToggle.IsOn,
+                UseComma = CommaToggle.IsOn,
+            };
+            if (MonthSpellingCombo.SelectedItem is ComboBoxItem mi && mi.Tag is string mt
+                && Enum.TryParse<HebMonthSpelling>(mt, out var ms)) o.MonthSpelling = ms;
+            if (YearStyleCombo.SelectedItem is ComboBoxItem yi && yi.Tag is string yt
+                && Enum.TryParse<HebYearStyle>(yt, out var ys)) o.YearStyle = ys;
+            if (GregStyleCombo.SelectedItem is ComboBoxItem gi && gi.Tag is string gt
+                && Enum.TryParse<GregDateStyle>(gt, out var gs)) o.GregStyle = gs;
+            return o;
+        }
+
+        private void OnDateFormatChanged(object sender, RoutedEventArgs e) => RefreshDateFormatPreview();
+
+        private void OnDateFormatComboChanged(object sender, SelectionChangedEventArgs e) => RefreshDateFormatPreview();
+
+        private void RefreshDateFormatPreview()
+        {
+            // Controls may not all exist yet during initial XAML load.
+            if (DateFormatPreview == null || GershayimToggle == null || MonthSpellingCombo == null) return;
+
+            var o = ReadDateFormatFromControls();
+            // Illustrative sample: 23 Cheshvan 5786, so the month-spelling option is visible.
+            var heb = HebrewDateFormatter.Full(23, "חשוון", 5786, o);
+            var greg = HebrewDateFormatter.Gregorian(new DateTime(2026, 11, 14), o);
+            DateFormatPreview.Text = $"{heb}\n{greg}";
+        }
 
         private void LoadAbayeLogo()
         {

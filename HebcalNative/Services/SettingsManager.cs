@@ -56,6 +56,47 @@ namespace ItimHebrewCalendar.Services
         Classic
     }
 
+    // How the month name is spelled. Only Cheshvan has real variants in practice.
+    public enum HebMonthSpelling
+    {
+        Full,        // חשוון
+        Haser,       // חשון
+        Marcheshvan  // מרחשוון
+    }
+
+    public enum HebYearStyle
+    {
+        WithMillennium,     // ה'תשפ"ו
+        WithoutMillennium,  // תשפ"ו
+        Numeric             // 5786
+    }
+
+    public enum GregDateStyle
+    {
+        Long,            // 29 ביוני 2026
+        LongWithWeekday, // יום שני, 29 ביוני 2026
+        Numeric,         // 29/06/2026
+        Iso              // 2026-06-29
+    }
+
+    // Controls how Hebrew (and accompanying Gregorian) dates are rendered across the app.
+    // The defaults reproduce the historical hard-coded formatting exactly.
+    public class HebrewDateFormatOptions
+    {
+        public bool UseGershayim { get; set; } = true;   // geresh/gershayim on day & year gematria
+        public bool UseBetPrefix { get; set; } = true;   // "ב" before the month (ז' בחשוון)
+        public bool UseComma { get; set; } = false;      // comma between month and year
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public HebMonthSpelling MonthSpelling { get; set; } = HebMonthSpelling.Full;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public HebYearStyle YearStyle { get; set; } = HebYearStyle.WithMillennium;
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public GregDateStyle GregStyle { get; set; } = GregDateStyle.LongWithWeekday;
+    }
+
     public class AppSettings
     {
         public string CityName { get; set; } = "ירושלים";
@@ -98,6 +139,8 @@ namespace ItimHebrewCalendar.Services
         public int MissedReminderLookbackHours { get; set; } = 24;
 
         public bool AutoCheckUpdates { get; set; } = true;
+
+        public HebrewDateFormatOptions DateFormat { get; set; } = new();
 
         // Stored as UTC; null = never checked.
         public DateTime? LastUpdateCheckUtc { get; set; }

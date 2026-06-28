@@ -63,9 +63,8 @@ namespace ItimHebrewCalendar.Windows
         {
             _day = day;
 
-            TxtHebrew.Text = $"{day.HebDayStr} ב{day.HebMonthName} {day.HebYear}";
-            TxtGregorian.Text = day.Date.ToString("d בMMMM yyyy",
-                CultureInfo.GetCultureInfo("he-IL"));
+            TxtHebrew.Text = HebrewDateFormatter.Full(day.HebDay, day.HebMonthName, day.HebYear, App.Settings.DateFormat);
+            TxtGregorian.Text = HebrewDateFormatter.GregorianNoWeekday(day.Date, App.Settings.DateFormat);
             TxtDayOfWeek.Text = day.Date.ToString("dddd",
                 CultureInfo.GetCultureInfo("he-IL"));
 

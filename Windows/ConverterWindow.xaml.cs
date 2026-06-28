@@ -194,6 +194,7 @@ namespace ItimHebrewCalendar.Windows
             try
             {
                 ErrorBar.IsOpen = false;
+                CopyStatus.Text = "";
                 if (GregDatePicker.Date is not DateTimeOffset dto) return;
 
                 var date = dto.DateTime;
@@ -204,9 +205,9 @@ namespace ItimHebrewCalendar.Windows
                     return;
                 }
 
-                TxtResultPrimary.Text = heb.Render;
-                TxtResultSecondary.Text = date.ToString("dddd, d בMMMM yyyy",
-                    CultureInfo.GetCultureInfo("he-IL"));
+                var fmt = App.Settings.DateFormat;
+                TxtResultPrimary.Text = HebrewDateFormatter.Full(heb.HebDay, heb.MonthName, heb.HebYear, fmt);
+                TxtResultSecondary.Text = HebrewDateFormatter.Gregorian(date, fmt);
             }
             catch (Exception ex)
             {
@@ -219,6 +220,7 @@ namespace ItimHebrewCalendar.Windows
             try
             {
                 ErrorBar.IsOpen = false;
+                CopyStatus.Text = "";
 
                 int? dayTag = SelectedDayTag();
                 if (dayTag == null) return; // user hasn't picked a day yet
@@ -244,8 +246,7 @@ namespace ItimHebrewCalendar.Windows
                 }
 
                 var date = new DateTime(greg.Year, greg.Month, greg.Day);
-                TxtResultPrimary.Text = date.ToString("d בMMMM yyyy",
-                    CultureInfo.GetCultureInfo("he-IL"));
+                TxtResultPrimary.Text = HebrewDateFormatter.GregorianNoWeekday(date, App.Settings.DateFormat);
                 TxtResultSecondary.Text = date.ToString("dddd", CultureInfo.GetCultureInfo("he-IL"));
             }
             catch (Exception ex)
@@ -260,6 +261,32 @@ namespace ItimHebrewCalendar.Windows
             ErrorBar.IsOpen = true;
             TxtResultPrimary.Text = "—";
             TxtResultSecondary.Text = "";
+        }
+
+        private void OnCopyPrimary(object sender, RoutedEventArgs e) => CopyToClipboard(TxtResultPrimary.Text);
+
+        private void OnCopySecondary(object sender, RoutedEventArgs e) => CopyToClipboard(TxtResultSecondary.Text);
+
+        private void OnCopyBoth(object sender, RoutedEventArgs e)
+        {
+            var both = $"{TxtResultPrimary.Text}\n{TxtResultSecondary.Text}".Trim();
+            CopyToClipboard(both);
+        }
+
+        private void CopyToClipboard(string? text)
+        {
+            if (string.IsNullOrWhiteSpace(text) || text == "—") return;
+            try
+            {
+                var dp = new global::Windows.ApplicationModel.DataTransfer.DataPackage();
+                dp.SetText(text);
+                global::Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dp);
+                CopyStatus.Text = "הועתק ✓";
+            }
+            catch (Exception ex)
+            {
+                SettingsManager.LogError("ConverterWindow.Copy", ex);
+            }
         }
     }
 }

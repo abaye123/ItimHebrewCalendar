@@ -101,14 +101,73 @@
                                    Style="{ThemeResource CaptionTextBlockStyle}"
                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
                                    Opacity="0.9"/>
-                        <TextBlock x:Name="TxtResultPrimary"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                   FontWeight="SemiBold"/>
-                        <TextBlock x:Name="TxtResultSecondary"
-                                   Style="{ThemeResource BodyTextBlockStyle}"
-                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                   Opacity="0.85"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TxtResultPrimary"
+                                       Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       FontWeight="SemiBold"/>
+                            <Button x:Name="CopyPrimaryButton"
+                                    Grid.Column="1"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                    Click="OnCopyPrimary"
+                                    ToolTipService.ToolTip="העתק">
+                                <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
+                            </Button>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TxtResultSecondary"
+                                       Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       Opacity="0.85"/>
+                            <Button x:Name="CopySecondaryButton"
+                                    Grid.Column="1"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="8"
+                                    VerticalAlignment="Center"
+                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                    Click="OnCopySecondary"
+                                    ToolTipService.ToolTip="העתק">
+                                <FontIcon Glyph="&#xE8C8;" FontSize="14"/>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                            <Button x:Name="CopyBothButton"
+                                    Click="OnCopyBoth"
+                                    Background="Transparent"
+                                    BorderBrush="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE8C8;" FontSize="13"/>
+                                    <TextBlock Text="העתק את שניהם"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock x:Name="CopyStatus"
+                                       VerticalAlignment="Center"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       Style="{ThemeResource CaptionTextBlockStyle}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 

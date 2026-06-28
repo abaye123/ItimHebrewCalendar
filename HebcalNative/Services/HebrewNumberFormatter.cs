@@ -9,7 +9,11 @@ namespace ItimHebrewCalendar.Services
         private const char Geresh = '\'';
         private const char Gershayim = '"';
 
-        public static string FormatYear(int year)
+        public static string FormatYear(int year) => FormatYear(year, punctuation: true, millennium: true);
+
+        // punctuation: insert geresh/gershayim into the gematria.
+        // millennium:  prefix the fifth-millennium "ה" marker (ה'תשפ"ו vs תשפ"ו).
+        public static string FormatYear(int year, bool punctuation, bool millennium)
         {
             if (year < 1 || year > 9999) return year.ToString();
 
@@ -17,7 +21,9 @@ namespace ItimHebrewCalendar.Services
             {
                 var letters = FormatSubThousand(year - 5000);
                 if (string.IsNullOrEmpty(letters)) return year.ToString();
-                return "ה'" + InsertPunctuation(letters);
+                var body = punctuation ? InsertPunctuation(letters) : letters;
+                if (!millennium) return body;
+                return punctuation ? "ה'" + body : "ה" + body;
             }
 
             // Years 1000-4999 (e.g. 4856 = ד'תתנ"ו): single thousands letter,
@@ -27,15 +33,16 @@ namespace ItimHebrewCalendar.Services
                 int thousands = year / 1000;
                 int rest = year % 1000;
                 var thousandsLetter = ThousandsLetter(thousands);
-                if (rest == 0) return thousandsLetter + Geresh;
+                if (rest == 0) return punctuation ? thousandsLetter + Geresh : thousandsLetter;
                 var restLetters = FormatSubThousand(rest);
                 if (string.IsNullOrEmpty(restLetters)) return year.ToString();
-                return thousandsLetter + Geresh + InsertPunctuation(restLetters);
+                var rest2 = punctuation ? InsertPunctuation(restLetters) : restLetters;
+                return punctuation ? thousandsLetter + Geresh + rest2 : thousandsLetter + rest2;
             }
 
             var sub = FormatSubThousand(year);
             if (string.IsNullOrEmpty(sub)) return year.ToString();
-            return InsertPunctuation(sub);
+            return punctuation ? InsertPunctuation(sub) : sub;
         }
 
         private static string ThousandsLetter(int n) => n switch
@@ -129,12 +136,14 @@ namespace ItimHebrewCalendar.Services
             _ => 0,
         };
 
-        public static string FormatDay(int day)
+        public static string FormatDay(int day) => FormatDay(day, punctuation: true);
+
+        public static string FormatDay(int day, bool punctuation)
         {
             if (day < 1 || day > 999) return day.ToString();
             var letters = FormatSubThousand(day);
             if (string.IsNullOrEmpty(letters)) return day.ToString();
-            return InsertPunctuation(letters);
+            return punctuation ? InsertPunctuation(letters) : letters;
         }
 
         private static string FormatSubThousand(int n)

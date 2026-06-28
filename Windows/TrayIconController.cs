@@ -298,7 +298,7 @@ namespace ItimHebrewCalendar.Windows
 
                 _trayIcon.UpdateIcon(_currentIcon.Handle);
 
-                var hebFull = $"{today.DayStr} ב{today.MonthName} {today.YearStr}";
+                var hebFull = HebrewDateFormatter.Full(today.Day, today.MonthName, today.Year, settings.DateFormat);
                 var omer = OmerHelper.FormatOmer(today.Month, today.Day);
                 var tooltip = $"{hebFull} ({DateTime.Today:dd/MM/yyyy})";
                 if (!string.IsNullOrEmpty(omer)) tooltip += $"\n{omer}";

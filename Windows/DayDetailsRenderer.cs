@@ -53,9 +53,9 @@ namespace ItimHebrewCalendar.Windows
             var ci = CultureInfo.GetCultureInfo("he-IL");
 
             if (t.HebrewLabel != null)
-                t.HebrewLabel.Text = $"{day.HebDayStr} ב{day.HebMonthName} {HebrewNumberFormatter.FormatYear(day.HebYear)}";
+                t.HebrewLabel.Text = HebrewDateFormatter.Full(day.HebDay, day.HebMonthName, day.HebYear, App.Settings.DateFormat);
             if (t.GregorianLabel != null)
-                t.GregorianLabel.Text = day.Date.ToString("d בMMMM yyyy", ci);
+                t.GregorianLabel.Text = HebrewDateFormatter.GregorianNoWeekday(day.Date, App.Settings.DateFormat);
             if (t.DayOfWeekLabel != null)
                 t.DayOfWeekLabel.Text = day.Date.ToString("dddd", ci);
 

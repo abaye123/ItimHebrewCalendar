@@ -123,8 +123,9 @@ namespace ItimHebrewCalendar.Windows
                 };
 
                 var heb = HebcalBridge.Convert(date);
-                var hebStr = heb != null ? heb.Render : "";
-                TxtSubtitle.Text = $"{hebStr}  ·  {date.ToString("dddd, d בMMMM yyyy", CultureInfo.GetCultureInfo("he-IL"))}  ·  {city.Name}";
+                var fmt = App.Settings.DateFormat;
+                var hebStr = heb != null ? HebrewDateFormatter.Full(heb.HebDay, heb.MonthName, heb.HebYear, fmt) : "";
+                TxtSubtitle.Text = $"{hebStr}  ·  {HebrewDateFormatter.Gregorian(date, fmt)}  ·  {city.Name}";
 
                 var zmanim = ZmanimService.GetZmanim(date, loc);
                 if (zmanim == null)

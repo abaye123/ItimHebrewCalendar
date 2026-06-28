@@ -93,6 +93,91 @@
                     </StackPanel>
                 </Expander>
 
+                <Expander x:Name="DateFormatExpander"
+                          Header="תבנית התאריך"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <StackPanel Spacing="12" Padding="4,8">
+                        <TextBlock Text="כך יוצג התאריך העברי בכל מקום באפליקציה - בלוח, בכרטיס היום, ב-tray, בפרטי היום ובממיר."
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   TextWrapping="Wrap"/>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="14,10">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="דוגמה:"
+                                           Style="{ThemeResource CaptionTextBlockStyle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <TextBlock x:Name="DateFormatPreview"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <ToggleSwitch x:Name="GershayimToggle"
+                                      Header="גרשיים (כ&quot;ג, תשפ&quot;ו)"
+                                      OnContent="עם גרשיים"
+                                      OffContent="בלי גרשיים"
+                                      Toggled="OnDateFormatChanged"/>
+
+                        <ToggleSwitch x:Name="BetPrefixToggle"
+                                      Header="קידומת &quot;ב&quot; לפני החודש (ז' בחשוון)"
+                                      OnContent="עם הקידומת"
+                                      OffContent="בלי הקידומת"
+                                      Toggled="OnDateFormatChanged"/>
+
+                        <ToggleSwitch x:Name="CommaToggle"
+                                      Header="פסיק בין החודש לשנה"
+                                      OnContent="עם פסיק"
+                                      OffContent="בלי פסיק"
+                                      Toggled="OnDateFormatChanged"/>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="כתיב החודש"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <ComboBox x:Name="MonthSpellingCombo"
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="300"
+                                      SelectionChanged="OnDateFormatComboChanged">
+                                <ComboBoxItem Tag="Full" Content="מלא (חשוון)"/>
+                                <ComboBoxItem Tag="Haser" Content="חסר (חשון)"/>
+                                <ComboBoxItem Tag="Marcheshvan" Content="מרחשוון"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="תבנית השנה"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <ComboBox x:Name="YearStyleCombo"
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="300"
+                                      SelectionChanged="OnDateFormatComboChanged">
+                                <ComboBoxItem Tag="WithMillennium" Content="עם אלף (ה'תשפ&quot;ו)"/>
+                                <ComboBoxItem Tag="WithoutMillennium" Content="בלי אלף (תשפ&quot;ו)"/>
+                                <ComboBoxItem Tag="Numeric" Content="מספרי (5786)"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="תבנית התאריך הלועזי"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                            <ComboBox x:Name="GregStyleCombo"
+                                      HorizontalAlignment="Stretch"
+                                      MinWidth="300"
+                                      SelectionChanged="OnDateFormatComboChanged">
+                                <ComboBoxItem Tag="LongWithWeekday" Content="עם יום בשבוע (יום שני, 14 בנובמבר 2026)"/>
+                                <ComboBoxItem Tag="Long" Content="ארוך (14 בנובמבר 2026)"/>
+                                <ComboBoxItem Tag="Numeric" Content="מספרי (14/11/2026)"/>
+                                <ComboBoxItem Tag="Iso" Content="ISO (2026-11-14)"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
                 <Expander x:Name="LocationExpander"
                           Header="מיקום"
                           HorizontalAlignment="Stretch"
