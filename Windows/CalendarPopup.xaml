@@ -432,6 +432,9 @@
                 <Button Click="OnConverterClick" ToolTipService.ToolTip="ממיר תאריכים">
                     <FontIcon Glyph="&#xE8AB;" FontSize="14"/>
                 </Button>
+                <Button Click="OnAllEventsClick" ToolTipService.ToolTip="כל האירועים">
+                    <FontIcon Glyph="&#xE8FD;" FontSize="14"/>
+                </Button>
                 <Button Click="OnSettingsClick" ToolTipService.ToolTip="הגדרות">
                     <FontIcon Glyph="&#xE713;" FontSize="14"/>
                 </Button>

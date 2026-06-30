@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="ItimHebrewCalendar.Windows.EventsListWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ItimHebrewCalendar.Windows">
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="40">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="16,0,0,0">
+                <Image x:Name="TitleBarIcon" Width="18" Height="18" VerticalAlignment="Center"/>
+                <TextBlock Text="כל האירועים"
+                           Style="{ThemeResource CaptionTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="24,12,24,8" Spacing="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="כל האירועים"
+                               Style="{ThemeResource TitleTextBlockStyle}"/>
+                    <TextBlock x:Name="CountText"
+                               Style="{ThemeResource BodyTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+                <Button Grid.Column="1"
+                        x:Name="AddEventButton"
+                        Click="OnAddEventClick"
+                        VerticalAlignment="Center"
+                        Style="{ThemeResource AccentButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE710;" FontSize="13"/>
+                        <TextBlock Text="אירוע חדש"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="SearchBox"
+                         Grid.Column="0"
+                         PlaceholderText="חיפוש לפי כותרת או תיאור..."
+                         TextChanged="OnSearchChanged"
+                         HorizontalAlignment="Stretch"/>
+
+                <ComboBox x:Name="SortCombo"
+                          Grid.Column="1"
+                          MinWidth="190"
+                          SelectionChanged="OnSortChanged">
+                    <ComboBoxItem Tag="DateDesc" Content="תאריך: מהחדש לישן" IsSelected="True"/>
+                    <ComboBoxItem Tag="DateAsc" Content="תאריך: מהישן לחדש"/>
+                    <ComboBoxItem Tag="Created" Content="מועד יצירה (אחרון ראשון)"/>
+                    <ComboBoxItem Tag="Title" Content="כותרת (א-ת)"/>
+                </ComboBox>
+            </Grid>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2" Padding="24,4,24,20" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <StackPanel x:Name="EventsPanel" Spacing="8"/>
+                <TextBlock x:Name="EmptyText"
+                           Text="אין אירועים שמורים."
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,32,0,0"
+                           Visibility="Collapsed"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

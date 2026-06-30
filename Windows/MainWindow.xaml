@@ -368,6 +368,12 @@
                         <TextBlock Text="אירוע חדש"/>
                     </StackPanel>
                 </Button>
+                <Button Click="OnAllEventsClick" ToolTipService.ToolTip="כל האירועים">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE8FD;" FontSize="13"/>
+                        <TextBlock Text="כל האירועים"/>
+                    </StackPanel>
+                </Button>
                 <Button Click="OnConverterClick" ToolTipService.ToolTip="ממיר תאריכים">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <FontIcon Glyph="&#xE787;" FontSize="13"/>

@@ -581,6 +581,11 @@ namespace ItimHebrewCalendar.Windows
             new ConverterWindow().Activate();
         }
 
+        private void OnAllEventsClick(object sender, RoutedEventArgs e)
+        {
+            new EventsListWindow().Activate();
+        }
+
         private void OnSettingsClick(object sender, RoutedEventArgs e)
         {
             var win = new SettingsWindow();
