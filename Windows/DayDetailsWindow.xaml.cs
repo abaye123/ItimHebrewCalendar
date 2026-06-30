@@ -256,16 +256,14 @@ namespace ItimHebrewCalendar.Windows
             };
             btn.Click += (_, _) =>
             {
-                var editor = new EventEditorWindow(ev, _day.Date, () => Populate(_day));
-                editor.Activate();
+                EventEditorWindow.OpenForEdit(ev, _day.Date, () => Populate(_day));
             };
             return btn;
         }
 
         private void OnAddEvent(object sender, RoutedEventArgs e)
         {
-            var editor = new EventEditorWindow(null, _day.Date, () => Populate(_day));
-            editor.Activate();
+            EventEditorWindow.OpenForNew(_day.Date, () => Populate(_day));
         }
     }
 }

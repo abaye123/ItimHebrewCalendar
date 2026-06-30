@@ -23,6 +23,19 @@ namespace ItimHebrewCalendar.Windows
         private List<ReminderRule> _reminders = new();
         private Action? _onSavedOrDeleted;
 
+        // Key for the single shared "new event" draft window. A new event has no
+        // stable id yet, so all "add event" entry points share one draft window.
+        private static readonly object NewEventKey = new();
+
+        // Opens (or re-focuses) the editor for an existing event. If a window is already
+        // open for this event, it's brought to the foreground instead of creating another.
+        public static EventEditorWindow OpenForEdit(UserEvent existing, DateTime defaultDate, Action? onSavedOrDeleted = null)
+            => WindowManager.Show(existing.Id, () => new EventEditorWindow(existing, defaultDate, onSavedOrDeleted));
+
+        // Opens (or re-focuses) the shared draft window for creating a new event.
+        public static EventEditorWindow OpenForNew(DateTime defaultDate, Action? onSavedOrDeleted = null)
+            => WindowManager.Show(NewEventKey, () => new EventEditorWindow(null, defaultDate, onSavedOrDeleted));
+
         public EventEditorWindow(UserEvent? existing, DateTime defaultDate, Action? onSavedOrDeleted = null)
         {
             InitializeComponent();

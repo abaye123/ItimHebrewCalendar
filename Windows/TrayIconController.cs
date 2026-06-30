@@ -11,9 +11,6 @@ namespace ItimHebrewCalendar.Windows
         private TrayIconWithContextMenu? _trayIcon;
         private CalendarPopup? _popup;
         private MainWindow? _mainWindow;
-        private SettingsWindow? _settingsWindow;
-        private ConverterWindow? _converterWindow;
-        private ZmanimWindow? _zmanimWindow;
 
         private DispatcherQueueTimer? _refreshTimer;
         private string _lastDateStr = "";
@@ -185,80 +182,36 @@ namespace ItimHebrewCalendar.Windows
 
         private void ShowSettings()
         {
-            if (_settingsWindow != null)
-            {
-                _settingsWindow.Activate();
-                WindowHelpers.BringToForeground(_settingsWindow);
-                return;
-            }
-            _settingsWindow = new SettingsWindow();
-            _settingsWindow.Closed += (_, _) =>
-            {
-                _settingsWindow = null;
-                _lastDateStr = ""; // force a redraw in case settings changed the icon text
-                UpdateIcon();
-                _popup?.Refresh();
-            };
-            _settingsWindow.Activate();
-            WindowHelpers.BringToForeground(_settingsWindow);
+            WindowManager.Show(typeof(SettingsWindow), () => new SettingsWindow(), onClosed: OnSettingsClosed);
         }
 
         private void ShowConverter()
         {
-            if (_converterWindow != null)
-            {
-                _converterWindow.Activate();
-                WindowHelpers.BringToForeground(_converterWindow);
-                return;
-            }
-            _converterWindow = new ConverterWindow();
-            _converterWindow.Closed += (_, _) => _converterWindow = null;
-            _converterWindow.Activate();
-            WindowHelpers.BringToForeground(_converterWindow);
+            WindowManager.Show(typeof(ConverterWindow), () => new ConverterWindow());
         }
 
         private void ShowZmanimWindow()
         {
-            if (_zmanimWindow != null)
-            {
-                _zmanimWindow.Activate();
-                WindowHelpers.BringToForeground(_zmanimWindow);
-                return;
-            }
-            _zmanimWindow = new ZmanimWindow();
-            _zmanimWindow.Closed += (_, _) => _zmanimWindow = null;
-            _zmanimWindow.Activate();
-            WindowHelpers.BringToForeground(_zmanimWindow);
+            WindowManager.Show(typeof(ZmanimWindow), () => new ZmanimWindow());
         }
 
-        // Tray right-click shortcut: open the event editor for a brand new event,
-        // anchored to today. Each invocation creates its own editor — we don't
-        // single-instance it, so the user can stack several drafts if they want.
+        // Tray right-click shortcut: open the shared "new event" draft, anchored to today.
         private void ShowNewEvent()
         {
-            var editor = new EventEditorWindow(null, DateTime.Today);
-            editor.Activate();
-            WindowHelpers.BringToForeground(editor);
+            EventEditorWindow.OpenForNew(DateTime.Today);
         }
 
         private void ShowAbout()
         {
-            if (_settingsWindow != null)
-            {
-                _settingsWindow.Activate();
-                WindowHelpers.BringToForeground(_settingsWindow);
-                return;
-            }
-            _settingsWindow = new SettingsWindow(focusAbout: true);
-            _settingsWindow.Closed += (_, _) =>
-            {
-                _settingsWindow = null;
-                _lastDateStr = "";
-                UpdateIcon();
-                _popup?.Refresh();
-            };
-            _settingsWindow.Activate();
-            WindowHelpers.BringToForeground(_settingsWindow);
+            // Shares the single settings window; if it's already open we just focus it.
+            WindowManager.Show(typeof(SettingsWindow), () => new SettingsWindow(focusAbout: true), onClosed: OnSettingsClosed);
+        }
+
+        private void OnSettingsClosed()
+        {
+            _lastDateStr = ""; // force a redraw in case settings changed the icon text
+            UpdateIcon();
+            _popup?.Refresh();
         }
 
         public void UpdateIcon()
@@ -334,9 +287,7 @@ namespace ItimHebrewCalendar.Windows
 
             _popup?.Close();
             _mainWindow?.Close();
-            _settingsWindow?.Close();
-            _converterWindow?.Close();
-            _zmanimWindow?.Close();
+            WindowManager.CloseAll();
 
             GC.SuppressFinalize(this);
         }

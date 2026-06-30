@@ -70,8 +70,7 @@ namespace ItimHebrewCalendar.Windows
 
         private void OnAddEventClick(object sender, RoutedEventArgs e)
         {
-            var editor = new EventEditorWindow(null, DateTime.Today, BuildList);
-            editor.Activate();
+            EventEditorWindow.OpenForNew(DateTime.Today, BuildList);
         }
 
         private void BuildList()
@@ -210,8 +209,7 @@ namespace ItimHebrewCalendar.Windows
             ToolTipService.SetToolTip(btn, "לחץ לעריכה");
             btn.Click += (_, _) =>
             {
-                var editor = new EventEditorWindow(ev, greg, BuildList);
-                editor.Activate();
+                EventEditorWindow.OpenForEdit(ev, greg, BuildList);
             };
             return btn;
         }

@@ -371,8 +371,7 @@ namespace ItimHebrewCalendar.Windows
                 ZmanimPanel = DetailsZmanimPanel,
                 OnEditUserEvent = ev =>
                 {
-                    var editor = new EventEditorWindow(ev, day.Date, () => ShowDayDetails(day));
-                    editor.Activate();
+                    EventEditorWindow.OpenForEdit(ev, day.Date, () => ShowDayDetails(day));
                 }
             });
 
@@ -573,29 +572,27 @@ namespace ItimHebrewCalendar.Windows
 
         private void OnZmanimClick(object sender, RoutedEventArgs e)
         {
-            new ZmanimWindow().Activate();
+            WindowManager.Show(typeof(ZmanimWindow), () => new ZmanimWindow());
         }
 
         private void OnConverterClick(object sender, RoutedEventArgs e)
         {
-            new ConverterWindow().Activate();
+            WindowManager.Show(typeof(ConverterWindow), () => new ConverterWindow());
         }
 
         private void OnAllEventsClick(object sender, RoutedEventArgs e)
         {
-            new EventsListWindow().Activate();
+            WindowManager.Show(typeof(EventsListWindow), () => new EventsListWindow());
         }
 
         private void OnSettingsClick(object sender, RoutedEventArgs e)
         {
-            var win = new SettingsWindow();
-            win.Closed += (_, _) =>
+            WindowManager.Show(typeof(SettingsWindow), () => new SettingsWindow(), onClosed: () =>
             {
                 ThemeHelper.Apply(this, App.Settings.Theme, _backdrop?.Config);
                 Refresh();
                 App.Tray?.UpdateIcon();
-            };
-            win.Activate();
+            });
         }
 
         // ─── Daily view ────────────────────────────────────────────────────────────
@@ -652,12 +649,11 @@ namespace ItimHebrewCalendar.Windows
         private void OnAddEventClick(object sender, RoutedEventArgs e)
         {
             var defaultDate = (DailyViewToggle.IsChecked == true) ? _dailyDate : _halachicTodayDate;
-            var editor = new EventEditorWindow(null, defaultDate, () =>
+            EventEditorWindow.OpenForNew(defaultDate, () =>
             {
                 if (DailyViewToggle.IsChecked == true) RefreshDaily();
                 else Refresh();
             });
-            editor.Activate();
         }
 
         private void OnDailyPrev(object sender, RoutedEventArgs e)
@@ -718,8 +714,7 @@ namespace ItimHebrewCalendar.Windows
                     ZmanimPanel = DailyZmanimPanel,
                     OnEditUserEvent = ev =>
                     {
-                        var editor = new EventEditorWindow(ev, _dailyDate, RefreshDaily);
-                        editor.Activate();
+                        EventEditorWindow.OpenForEdit(ev, _dailyDate, RefreshDaily);
                     }
                 });
             }
