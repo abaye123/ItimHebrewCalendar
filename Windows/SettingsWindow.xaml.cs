@@ -445,11 +445,7 @@ namespace ItimHebrewCalendar.Windows
             labelBox.TextChanged += (_, _) => r.Label = labelBox.Text;
             sp.Children.Add(labelBox);
 
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-            var zmanCombo = new ComboBox { Header = "זמן הלכתי", HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(0, 0, 4, 0) };
+            var zmanCombo = new ComboBox { Header = "זמן הלכתי", HorizontalAlignment = HorizontalAlignment.Stretch };
             int sel = 0, i = 0;
             foreach (ZmanimKey k in Enum.GetValues<ZmanimKey>())
             {
@@ -463,23 +459,9 @@ namespace ItimHebrewCalendar.Windows
                 if (zmanCombo.SelectedItem is ComboBoxItem ci && ci.Tag is ZmanimKey k)
                     r.Zman = k;
             };
-            Grid.SetColumn(zmanCombo, 0);
-            grid.Children.Add(zmanCombo);
+            sp.Children.Add(zmanCombo);
 
-            var offsetBox = new NumberBox
-            {
-                Header = "היסט (דק')",
-                Value = r.OffsetMinutes,
-                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
-                Margin = new Thickness(4, 0, 0, 0)
-            };
-            offsetBox.ValueChanged += (_, ev) =>
-            {
-                if (!double.IsNaN(ev.NewValue)) r.OffsetMinutes = (int)ev.NewValue;
-            };
-            Grid.SetColumn(offsetBox, 1);
-            grid.Children.Add(offsetBox);
-            sp.Children.Add(grid);
+            sp.Children.Add(ReminderUiHelpers.BuildOffsetInput(r.OffsetMinutes, m => r.OffsetMinutes = m));
 
             var skipShabbat = new CheckBox { Content = "דלג בשבת ובחגים", IsChecked = r.SkipShabbatYomTov };
             skipShabbat.Checked   += (_, _) => r.SkipShabbatYomTov = true;

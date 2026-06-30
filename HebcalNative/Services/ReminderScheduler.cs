@@ -71,6 +71,9 @@ namespace ItimHebrewCalendar.Services
             EventOccurrence occ, ReminderRule rule, LocationInfo loc)
         {
             if (!rule.Enabled) yield break;
+            // Absolute date+time reminders are tied to the event, not to a specific
+            // occurrence date, so they're resolved once in ResolveAbsoluteForEvent.
+            if (rule.AnchorKind == ReminderAnchorKind.AbsoluteDateTime) yield break;
             var ev = occ.Event;
 
             DateTimeOffset? eventStart = null;
@@ -138,6 +141,32 @@ namespace ItimHebrewCalendar.Services
             }
         }
 
+        // Fires once at the rule's absolute local date+time, regardless of the event's
+        // own date. Iterated per event (not per occurrence) by the host service.
+        public static IEnumerable<ReminderOccurrence> ResolveAbsoluteForEvent(
+            UserEvent ev, ReminderRule rule, LocationInfo loc)
+        {
+            if (!rule.Enabled) yield break;
+            if (rule.AnchorKind != ReminderAnchorKind.AbsoluteDateTime) yield break;
+            if (!rule.AbsoluteWhen.HasValue) yield break;
+
+            var fire = ToOffset(rule.AbsoluteWhen.Value, loc.TimeZone);
+            DateTimeOffset? eventStart = ev.StartGregorian.HasValue
+                ? ToOffset(ev.StartGregorian.Value.Date.Add(ev.StartTime ?? TimeSpan.Zero), loc.TimeZone)
+                : null;
+
+            yield return new ReminderOccurrence
+            {
+                SourceId = ev.Id,
+                SourceTitle = ev.Title,
+                SourceDescription = ev.Description,
+                FireAt = fire,
+                Kind = ReminderOccurrenceKind.UserEvent,
+                AnchorLabel = $"בתאריך שנקבע ({rule.AbsoluteWhen.Value:dd/MM HH:mm})",
+                EventStart = eventStart
+            };
+        }
+
         public static IEnumerable<ReminderOccurrence> ResolveStandalone(
             StandaloneZmanReminder reminder, DateTime date, LocationInfo loc, bool isShabbatOrYomTov)
         {
@@ -194,8 +223,19 @@ namespace ItimHebrewCalendar.Services
         public static string FormatOffsetLabel(int offsetMinutes, string anchorName)
         {
             if (offsetMinutes == 0) return $"בזמן {anchorName}";
-            if (offsetMinutes < 0) return $"{-offsetMinutes} דק' לפני {anchorName}";
-            return $"{offsetMinutes} דק' אחרי {anchorName}";
+
+            int abs = Math.Abs(offsetMinutes);
+            string amount;
+            if (abs % 60 == 0)
+            {
+                int h = abs / 60;
+                amount = h == 1 ? "שעה" : h == 2 ? "שעתיים" : $"{h} שעות";
+            }
+            else
+            {
+                amount = $"{abs} דק'";
+            }
+            return offsetMinutes < 0 ? $"{amount} לפני {anchorName}" : $"{amount} אחרי {anchorName}";
         }
     }
 }

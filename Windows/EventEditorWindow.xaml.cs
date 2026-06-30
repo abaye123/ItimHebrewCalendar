@@ -247,6 +247,7 @@ namespace ItimHebrewCalendar.Windows
             ZmanAnchors = r.ZmanAnchors.Select(a => new ZmanimAnchor { Zman = a.Zman }).ToList(),
             ZmanCombination = r.ZmanCombination,
             OffsetMinutes = r.OffsetMinutes,
+            AbsoluteWhen = r.AbsoluteWhen,
             Enabled = r.Enabled
         };
 
@@ -346,6 +347,16 @@ namespace ItimHebrewCalendar.Windows
                     if (new DateTimeOffset(fire) < now)
                     {
                         error = "אחת התזכורות נופלת בעבר. שנה את זמן האירוע או את ההיסט.";
+                        return false;
+                    }
+                }
+                else if (r.AnchorKind == ReminderAnchorKind.AbsoluteDateTime)
+                {
+                    if (!r.AbsoluteWhen.HasValue)
+                    { error = "יש לבחור תאריך ושעה לתזכורת."; return false; }
+                    if (new DateTimeOffset(r.AbsoluteWhen.Value) < now)
+                    {
+                        error = "אחת התזכורות נופלת בעבר. שנה את תאריך/שעת התזכורת.";
                         return false;
                     }
                 }
@@ -486,37 +497,27 @@ namespace ItimHebrewCalendar.Windows
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Header = "סוג עוגן"
             };
-            var fixedItem = new ComboBoxItem { Content = "זמן קבוע (יחסית להתחלה)", Tag = "Fixed" };
-            var zmanItem  = new ComboBoxItem { Content = "זמן הלכתי", Tag = "Zman" };
-            anchorCombo.Items.Add(fixedItem);
-            anchorCombo.Items.Add(zmanItem);
-            anchorCombo.SelectedIndex = rule.AnchorKind == ReminderAnchorKind.Zman ? 1 : 0;
+            anchorCombo.Items.Add(new ComboBoxItem { Content = "זמן קבוע (יחסית להתחלה)", Tag = "Fixed" });
+            anchorCombo.Items.Add(new ComboBoxItem { Content = "זמן הלכתי", Tag = "Zman" });
+            anchorCombo.Items.Add(new ComboBoxItem { Content = "תאריך ושעה מסוימים", Tag = "Absolute" });
+            anchorCombo.SelectedIndex = rule.AnchorKind switch
+            {
+                ReminderAnchorKind.Zman => 1,
+                ReminderAnchorKind.AbsoluteDateTime => 2,
+                _ => 0
+            };
             sp.Children.Add(anchorCombo);
 
-            // Offset
-            var offsetGrid = new Grid();
-            offsetGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            offsetGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            // Offset (value + minutes/hours unit) — for Fixed & Zman anchors.
+            var offsetInput = ReminderUiHelpers.BuildOffsetInput(
+                rule.OffsetMinutes, m => rule.OffsetMinutes = m);
+            sp.Children.Add(offsetInput);
 
-            var offsetBox = new NumberBox
-            {
-                Header = "היסט (דק'; שלילי = לפני)",
-                Value = rule.OffsetMinutes,
-                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact,
-                Margin = new Thickness(0, 0, 4, 0)
-            };
-            offsetBox.ValueChanged += (_, e) =>
-            {
-                if (!double.IsNaN(e.NewValue)) rule.OffsetMinutes = (int)e.NewValue;
-            };
-            Grid.SetColumn(offsetBox, 0);
-            offsetGrid.Children.Add(offsetBox);
-
+            // Zman combination — for Zman anchor only.
             var combineCombo = new ComboBox
             {
                 Header = "מצרף עוגנים",
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                Margin = new Thickness(4, 0, 0, 0)
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
             combineCombo.Items.Add(new ComboBoxItem { Content = "המוקדם ביותר", Tag = "Earliest" });
             combineCombo.Items.Add(new ComboBoxItem { Content = "כל אחד בנפרד", Tag = "All" });
@@ -526,9 +527,41 @@ namespace ItimHebrewCalendar.Windows
                 var tag = (combineCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
                 rule.ZmanCombination = tag == "All" ? ZmanCombination.All : ZmanCombination.Earliest;
             };
-            Grid.SetColumn(combineCombo, 1);
-            offsetGrid.Children.Add(combineCombo);
-            sp.Children.Add(offsetGrid);
+            sp.Children.Add(combineCombo);
+
+            // Absolute date + time — for the AbsoluteDateTime anchor only.
+            var absInit = rule.AbsoluteWhen ?? DateTime.Today.AddDays(1).AddHours(9);
+            var absGrid = new Grid();
+            absGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            absGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            var absDatePicker = new CalendarDatePicker
+            {
+                Header = "תאריך",
+                Date = new DateTimeOffset(absInit.Date),
+                DateFormat = "{day.integer}/{month.integer}/{year.full}",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                MinWidth = 0,
+                Margin = new Thickness(0, 0, 4, 0)
+            };
+            var absTimePicker = new TimePicker
+            {
+                Header = "שעה",
+                Time = absInit.TimeOfDay,
+                ClockIdentifier = "24HourClock",
+                Margin = new Thickness(4, 0, 0, 0)
+            };
+            void UpdateAbsolute()
+            {
+                var d = absDatePicker.Date?.DateTime.Date ?? DateTime.Today;
+                rule.AbsoluteWhen = d.Add(absTimePicker.Time);
+            }
+            absDatePicker.DateChanged += (_, _) => UpdateAbsolute();
+            absTimePicker.TimeChanged += (_, _) => UpdateAbsolute();
+            Grid.SetColumn(absDatePicker, 0);
+            absGrid.Children.Add(absDatePicker);
+            Grid.SetColumn(absTimePicker, 1);
+            absGrid.Children.Add(absTimePicker);
+            sp.Children.Add(absGrid);
 
             // Zman anchors panel
             var zmanPanel = new StackPanel { Spacing = 4 };
@@ -564,13 +597,23 @@ namespace ItimHebrewCalendar.Windows
             void ApplyAnchorVisibility()
             {
                 bool isZman = rule.AnchorKind == ReminderAnchorKind.Zman;
+                bool isAbs = rule.AnchorKind == ReminderAnchorKind.AbsoluteDateTime;
+                offsetInput.Visibility = isAbs ? Visibility.Collapsed : Visibility.Visible;
                 zmanPanel.Visibility = isZman ? Visibility.Visible : Visibility.Collapsed;
                 combineCombo.Visibility = isZman ? Visibility.Visible : Visibility.Collapsed;
+                absGrid.Visibility = isAbs ? Visibility.Visible : Visibility.Collapsed;
             }
             anchorCombo.SelectionChanged += (_, _) =>
             {
                 var tag = (anchorCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
-                rule.AnchorKind = tag == "Zman" ? ReminderAnchorKind.Zman : ReminderAnchorKind.FixedOffset;
+                rule.AnchorKind = tag switch
+                {
+                    "Zman" => ReminderAnchorKind.Zman,
+                    "Absolute" => ReminderAnchorKind.AbsoluteDateTime,
+                    _ => ReminderAnchorKind.FixedOffset
+                };
+                if (rule.AnchorKind == ReminderAnchorKind.AbsoluteDateTime && !rule.AbsoluteWhen.HasValue)
+                    UpdateAbsolute();
                 ApplyAnchorVisibility();
             };
             ApplyAnchorVisibility();

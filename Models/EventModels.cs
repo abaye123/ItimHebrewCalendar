@@ -27,7 +27,8 @@ namespace ItimHebrewCalendar.Models
     public enum ReminderAnchorKind
     {
         FixedOffset,
-        Zman
+        Zman,
+        AbsoluteDateTime
     }
 
     public enum ZmanCombination
@@ -99,6 +100,11 @@ namespace ItimHebrewCalendar.Models
         public ZmanCombination ZmanCombination { get; set; } = ZmanCombination.Earliest;
 
         [JsonPropertyName("offsetMinutes")] public int OffsetMinutes { get; set; }
+
+        // Used only when AnchorKind == AbsoluteDateTime: a specific local date+time
+        // at which the reminder fires, independent of the event's own date.
+        [JsonPropertyName("absoluteWhen")] public DateTime? AbsoluteWhen { get; set; }
+
         [JsonPropertyName("enabled")]       public bool Enabled { get; set; } = true;
     }
 
