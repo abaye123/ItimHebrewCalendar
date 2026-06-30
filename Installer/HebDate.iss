@@ -36,6 +36,10 @@ LicenseFile=".\license.txt"
 UninstallDisplayIcon={app}\{#AppExeName}
 SetupIconFile=..\Assets\AppIcon.ico
 ShowLanguageDialog=auto
+; Let the Restart Manager close the app if it still holds files in {app}; we relaunch
+; it ourselves from [Run], so don't let Setup restart it (avoids a double launch).
+CloseApplications=yes
+RestartApplications=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -80,6 +84,27 @@ Filename: "{app}\{#AppExeName}"; \
     Check: WizardSilent
 
 [Code]
+// When the in-app updater launches this installer, it then exits the running app.
+// That exit races with file copy: if ItimHebrewCalendar.exe / its DLLs are still
+// locked, the copy fails and (with /NORESTART) the update is silently deferred to
+// the next reboot. Wait here for the app's single-instance mutex to be released
+// (i.e. the process is fully gone) before any files are replaced.
+// The mutex name must match Program.cs.
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := 1 to 40 do
+  begin
+    if not CheckForMutexes('ItimHebrewCalendar_SingleInstance_Mutex_{B8F3A1C2-4E7D-4A3F-9C8D-2E1F0A9B7C6D}') then
+      Exit;
+    Sleep(250);
+  end;
+  // Timed out (~10s): proceed anyway and let the Restart Manager / replace-on-reboot
+  // handle the rare stuck case rather than aborting a silent update.
+end;
+
 function IsWinAppRuntimeInstalled: Boolean;
 var
   Names: TArrayOfString;
