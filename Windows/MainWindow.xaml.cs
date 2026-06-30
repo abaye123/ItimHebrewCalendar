@@ -27,6 +27,7 @@ namespace ItimHebrewCalendar.Windows
         private const int WindowWidth = 980;
         private const int DetailsPanelWidth = 340;
         private int _currentHeight = -1;
+        private int _monthlyHeight;
         private bool _monthBuilt;
         private bool _loaded;
         private DateTime _halachicTodayDate = DateTime.Today;
@@ -436,9 +437,15 @@ namespace ItimHebrewCalendar.Windows
             }
 
             if (MonthlyContentGrid.Visibility == Visibility.Visible)
-                ApplyHeight(MeasureMonthlyHeight());
+            {
+                _monthlyHeight = MeasureMonthlyHeight();
+                ApplyHeight(_monthlyHeight);
+            }
             else
-                ApplyHeight(BaseHeight);
+            {
+                // Daily view keeps the monthly view's height so toggling never resizes.
+                ApplyHeight(_monthlyHeight > 0 ? _monthlyHeight : BaseHeight);
+            }
         }
 
         private int MeasureMonthlyHeight()
@@ -612,7 +619,7 @@ namespace ItimHebrewCalendar.Windows
             if (daily)
             {
                 _dailyDate = _halachicTodayDate;
-                ApplyHeight(BaseHeight);
+                AdjustHeightForCurrentView();
                 RefreshDaily();
             }
             else if (_monthBuilt)
