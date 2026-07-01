@@ -89,7 +89,7 @@ namespace ItimHebrewCalendar.Services
             if (!ev.StartGregorian.HasValue) return false;
 
             // First non-recurring occurrence in the horizon. For recurring events we
-            // sync only the next instance — Windows Appointments has its own RRULE
+            // sync only the next instance - Windows Appointments has its own RRULE
             // model and lifting our recurrence rules into it is intentionally out of scope.
             var firstOcc = EventOccurrenceExpander
                 .Expand(ev, DateTime.Today, horizon)

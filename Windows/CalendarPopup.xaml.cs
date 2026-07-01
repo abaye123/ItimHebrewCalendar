@@ -469,7 +469,7 @@ namespace ItimHebrewCalendar.Windows
         }
 
         // The monthly view has no internal scroll, so the window must be tall enough
-        // to show all of its content — otherwise the bottom toolbar is clipped. This
+        // to show all of its content - otherwise the bottom toolbar is clipped. This
         // happens for users with Windows text-scaling > 100% or longer date strings.
         // Measuring the real content height (instead of a fixed constant) keeps the
         // toolbar visible regardless of scaling, font, or wrapping. The daily/details

@@ -129,7 +129,7 @@ namespace ItimHebrewCalendar.Windows
             PopulateDayCombo(allow30: MonthHasDay30(year.Value, month.Value));
         }
 
-        // Computed without poking the Hebcal DLL with an out-of-range day — some
+        // Computed without poking the Hebcal DLL with an out-of-range day - some
         // native paths panic instead of returning an empty result, which kills the
         // whole process with no managed exception to log.
         public static bool MonthHasDay30(int year, int month)
@@ -138,8 +138,8 @@ namespace ItimHebrewCalendar.Windows
 
             bool has = month switch
             {
-                1 or 3 or 5 or 7 or 11 => true,        // Nisan, Sivan, Av, Tishrei, Shvat — always 30
-                2 or 4 or 6 or 10 or 13 => false,      // Iyar, Tammuz, Elul, Tevet, Adar II — always 29
+                1 or 3 or 5 or 7 or 11 => true,        // Nisan, Sivan, Av, Tishrei, Shvat - always 30
+                2 or 4 or 6 or 10 or 13 => false,      // Iyar, Tammuz, Elul, Tevet, Adar II - always 29
                 12 => IsHebrewLeapYear(year),          // Adar = 29 in regular, Adar I = 30 in leap
                 8 or 9 => CheshvanOrKislevHas30(year, month),
                 _ => false,
@@ -156,7 +156,7 @@ namespace ItimHebrewCalendar.Windows
 
         // Cheshvan (8) and Kislev (9) are the variable-length months. Cheshvan is 30
         // only in "complete" (shleimah) years; Kislev is 30 in regular or complete.
-        // We probe the year length by measuring days between successive Tishrei 1's —
+        // We probe the year length by measuring days between successive Tishrei 1's -
         // both calls are guaranteed-valid Hebrew dates, so they can't trip a native panic.
         private static bool CheshvanOrKislevHas30(int year, int month)
         {
@@ -521,12 +521,12 @@ namespace ItimHebrewCalendar.Windows
             };
             sp.Children.Add(anchorCombo);
 
-            // Offset (value + minutes/hours unit) — for Fixed & Zman anchors.
+            // Offset (value + minutes/hours unit) - for Fixed & Zman anchors.
             var offsetInput = ReminderUiHelpers.BuildOffsetInput(
                 rule.OffsetMinutes, m => rule.OffsetMinutes = m);
             sp.Children.Add(offsetInput);
 
-            // Zman combination — for Zman anchor only.
+            // Zman combination - for Zman anchor only.
             var combineCombo = new ComboBox
             {
                 Header = "מצרף עוגנים",
@@ -542,7 +542,7 @@ namespace ItimHebrewCalendar.Windows
             };
             sp.Children.Add(combineCombo);
 
-            // Absolute date + time — for the AbsoluteDateTime anchor only.
+            // Absolute date + time - for the AbsoluteDateTime anchor only.
             var absInit = rule.AbsoluteWhen ?? DateTime.Today.AddDays(1).AddHours(9);
             var absGrid = new Grid();
             absGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });

@@ -125,7 +125,7 @@ namespace ItimHebrewCalendar.Services
                 body = BuildMultipleBody(items);
             }
 
-            // AppNotification accepts toast XML schema. Keep it minimal — text + attribution.
+            // AppNotification accepts toast XML schema. Keep it minimal - text + attribution.
             var sb = new StringBuilder();
             sb.Append("<toast>");
             sb.Append("<visual><binding template='ToastGeneric'>");
@@ -164,7 +164,7 @@ namespace ItimHebrewCalendar.Services
                 if (i > 0) sb.Append('\n');
                 sb.Append("• ").Append(items[i].SourceTitle);
                 if (!string.IsNullOrEmpty(items[i].AnchorLabel))
-                    sb.Append(" — ").Append(items[i].AnchorLabel);
+                    sb.Append(" - ").Append(items[i].AnchorLabel);
             }
             return sb.ToString();
         }
@@ -177,7 +177,7 @@ namespace ItimHebrewCalendar.Services
                 if (i > 0) sb.Append('\n');
                 sb.Append("• ")
                   .Append(items[i].FireAt.ToString("HH:mm"))
-                  .Append(" — ")
+                  .Append(" - ")
                   .Append(items[i].SourceTitle);
             }
             if (items.Count > 6)

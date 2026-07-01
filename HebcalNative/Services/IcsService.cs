@@ -11,7 +11,7 @@ using WinRT.Interop;
 namespace ItimHebrewCalendar.Services
 {
     // Minimal RFC 5545 (iCalendar) export & import. Designed for compatibility
-    // with Outlook / Google Calendar / Apple Calendar — only the fields they
+    // with Outlook / Google Calendar / Apple Calendar - only the fields they
     // commonly read are produced. Halachic anchors are flattened: each occurrence
     // gets a fixed wall-clock time computed at export time.
     public static class IcsService

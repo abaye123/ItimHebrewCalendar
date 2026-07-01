@@ -54,7 +54,7 @@ namespace ItimHebrewCalendar.Services
             _ => n.ToString(),
         };
 
-        // Inverse of FormatYear — parses Hebrew gematria-style strings back into
+        // Inverse of FormatYear - parses Hebrew gematria-style strings back into
         // a year number. Accepts forms like:
         //   ה'תשפ"ו, התשפו, תשפ"ו   -> 5786
         //   ד'תתנ"ו, דתתנו           -> 4856

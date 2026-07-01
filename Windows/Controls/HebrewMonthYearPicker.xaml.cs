@@ -27,7 +27,7 @@ namespace ItimHebrewCalendar.Windows.Controls
             public override string ToString() => Name;
         }
 
-        // 100 years back, 30 forward — covers any realistic recall while keeping
+        // 100 years back, 30 forward - covers any realistic recall while keeping
         // the dropdown list manageable.
         private const int YearSpanBack = 100;
         private const int YearSpanForward = 30;
@@ -63,7 +63,7 @@ namespace ItimHebrewCalendar.Windows.Controls
                     SearchKey = NormalizeHebrew(name),
                 });
             }
-            // Most recent years near the cursor — show in reverse chronological order
+            // Most recent years near the cursor - show in reverse chronological order
             // so the current year sits at the top of the dropdown.
             items.Reverse();
             _allYears = items;
@@ -193,8 +193,8 @@ namespace ItimHebrewCalendar.Windows.Controls
             if (sender is AutoSuggestBox box) box.IsSuggestionListOpen = true;
         }
 
-        // Resolves whatever sits in TxtYear.Text — selected item, raw numeric,
-        // or any Hebrew gematria string — to a concrete Hebrew year integer.
+        // Resolves whatever sits in TxtYear.Text - selected item, raw numeric,
+        // or any Hebrew gematria string - to a concrete Hebrew year integer.
         // Falls back to ParseHebrewYear so historical years that aren't in the
         // ±100 dropdown (e.g. "דתתנו" / 4856) can still be navigated to.
         private int? ResolveYear()
@@ -202,7 +202,7 @@ namespace ItimHebrewCalendar.Windows.Controls
             var text = TxtYear.Text?.Trim() ?? "";
             if (text.Length == 0) return null;
 
-            // Exact match against the dropdown — fastest path for the common case.
+            // Exact match against the dropdown - fastest path for the common case.
             var match = _allYears.FirstOrDefault(y => string.Equals(y.Name, text, StringComparison.Ordinal));
             if (match != null) return match.Value;
 

@@ -670,7 +670,7 @@ namespace ItimHebrewCalendar.Windows
         // The freshly-launched installer waits for our single-instance mutex to be
         // released before it replaces files in the install folder. A graceful WinUI
         // shutdown (Application.Exit + Environment.Exit) runs finalizers on the UI
-        // thread and can hang or lag past the installer's mutex-wait timeout — the
+        // thread and can hang or lag past the installer's mutex-wait timeout - the
         // files stay locked, the copy fails, and with /NORESTART the update is
         // silently deferred to the next reboot. TerminateProcess (Process.Kill)
         // tears the process down immediately and lets the OS reclaim every handle,
@@ -678,7 +678,7 @@ namespace ItimHebrewCalendar.Windows
         private static void ShutdownForUpdate()
         {
             // Remove the tray icon first so it doesn't linger as a ghost after the
-            // process is gone. Guarded — we hard-kill regardless of the outcome.
+            // process is gone. Guarded - we hard-kill regardless of the outcome.
             try { App.Tray?.Dispose(); } catch { }
 
             try

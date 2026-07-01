@@ -116,7 +116,7 @@ namespace ItimHebrewCalendar.Windows
         private void HebInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_initializing) return;
-            // The year text changed — the (year, month) pair may have flipped between
+            // The year text changed - the (year, month) pair may have flipped between
             // a 30-day and a 29-day month (Cheshvan / Kislev / Adar), so re-filter days.
             RefreshConverterDayCombo();
             ConvertHebToGreg();
@@ -159,7 +159,7 @@ namespace ItimHebrewCalendar.Windows
             if (HebMonthCombo.SelectedItem is ComboBoxItem item && item.Tag is int m) month = m;
             int? year = HebrewNumberParser.ParseYear(HebYearBox.Text);
 
-            // No usable year yet — default to allowing all 30 days; conversion will validate.
+            // No usable year yet - default to allowing all 30 days; conversion will validate.
             if (month < 1 || !year.HasValue)
             {
                 PopulateConverterDayCombo(allow30: true);
@@ -259,7 +259,7 @@ namespace ItimHebrewCalendar.Windows
         {
             ErrorBar.Message = msg;
             ErrorBar.IsOpen = true;
-            TxtResultPrimary.Text = "—";
+            TxtResultPrimary.Text = "-";
             TxtResultSecondary.Text = "";
         }
 
@@ -275,7 +275,7 @@ namespace ItimHebrewCalendar.Windows
 
         private void CopyToClipboard(string? text)
         {
-            if (string.IsNullOrWhiteSpace(text) || text == "—") return;
+            if (string.IsNullOrWhiteSpace(text) || text == "-") return;
             try
             {
                 var dp = new global::Windows.ApplicationModel.DataTransfer.DataPackage();

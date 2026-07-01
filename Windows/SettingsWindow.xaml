@@ -539,7 +539,7 @@
                             <HyperlinkButton NavigateUri="https://abaye123.github.io/ItimHebrewCalendar/"
                                              Content="הורדה ידנית של הגרסה האחרונה מהאתר"
                                              Margin="0,2,0,0"/>
-                            <TextBlock Text="אם ההתקנה האוטומטית נכשלת — ניתן להוריד ולהתקין ידנית מהאתר."
+                            <TextBlock Text="אם ההתקנה האוטומטית נכשלת - ניתן להוריד ולהתקין ידנית מהאתר."
                                        Style="{ThemeResource CaptionTextBlockStyle}"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        TextWrapping="Wrap"/>

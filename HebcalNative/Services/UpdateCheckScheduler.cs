@@ -53,7 +53,7 @@ namespace ItimHebrewCalendar.Services
         }
 
         // Called by SettingsWindow after the user toggles the auto-check switch
-        // (or any other settings save). Idempotent — Start() stops first.
+        // (or any other settings save). Idempotent - Start() stops first.
         public static void OnSettingsChanged() => Start();
 
         public static async Task<UpdateChecker.ReleaseInfo?> CheckNow(bool showToastOnAvailable)
@@ -79,7 +79,7 @@ namespace ItimHebrewCalendar.Services
                     return release;
                 }
 
-                // Same or older — clear any stale cache so the toggle reflects reality.
+                // Same or older - clear any stale cache so the toggle reflects reality.
                 lock (_lock) _availableUpdate = null;
                 return null;
             }

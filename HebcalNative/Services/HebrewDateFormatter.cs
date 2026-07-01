@@ -52,7 +52,7 @@ namespace ItimHebrewCalendar.Services
         public static string Gregorian(DateTime d, HebrewDateFormatOptions o)
             => Gregorian(d, o.GregStyle);
 
-        // Same, but never includes the weekday — for contexts that already show a
+        // Same, but never includes the weekday - for contexts that already show a
         // separate day-of-week label and would otherwise duplicate it.
         public static string GregorianNoWeekday(DateTime d, HebrewDateFormatOptions o)
             => Gregorian(d, o.GregStyle == GregDateStyle.LongWithWeekday ? GregDateStyle.Long : o.GregStyle);

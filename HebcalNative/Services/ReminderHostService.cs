@@ -197,7 +197,7 @@ namespace ItimHebrewCalendar.Services
                                 result.Add(fire);
 
                 // Absolute date+time reminders fire on their own date, which may be
-                // outside the event's occurrence window — resolve them per event.
+                // outside the event's occurrence window - resolve them per event.
                 foreach (var rule in ev.Reminders)
                     foreach (var fire in ReminderScheduler.ResolveAbsoluteForEvent(ev, rule, loc))
                         if (fire.FireAt >= from && fire.FireAt <= to)

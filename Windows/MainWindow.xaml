@@ -349,7 +349,7 @@
 
         <!-- Shared bottom toolbar: visible in both monthly and daily views.
              RTL flow puts Column 0 visually on the right (actions) and
-             Column 2 visually on the left (view selector) — opposite ends. -->
+             Column 2 visually on the left (view selector) - opposite ends. -->
         <Grid x:Name="BottomBar" Grid.Row="2" Margin="20,4,20,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

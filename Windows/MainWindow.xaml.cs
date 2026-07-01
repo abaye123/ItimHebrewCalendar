@@ -344,7 +344,7 @@ namespace ItimHebrewCalendar.Windows
             _selectedDay = day;
 
             // Move the gray selection highlight to the clicked cell. Only when a cell
-            // was actually clicked — programmatic selects keep the current highlight.
+            // was actually clicked - programmatic selects keep the current highlight.
             if (border != null)
             {
                 bool isDark = ThemeHelper.IsEffectivelyDark(App.Settings.Theme);
@@ -425,7 +425,7 @@ namespace ItimHebrewCalendar.Windows
 
         // Size the window to the measured content so nothing is clipped at higher
         // Windows text-scaling. We measure only the (day-independent) left calendar
-        // column, not the details panel — that panel scrolls and its height changes
+        // column, not the details panel - that panel scrolls and its height changes
         // per selected day, which would otherwise resize the window on every click.
         private void AdjustHeightForCurrentView()
         {
@@ -525,7 +525,7 @@ namespace ItimHebrewCalendar.Windows
             MonthYearButton.Flyout?.Hide();
 
             // When a specific day was typed, jump straight into Daily view at that
-            // gregorian date — that's the cleanest way to "go to" an exact day.
+            // gregorian date - that's the cleanest way to "go to" an exact day.
             if (value.Day.HasValue)
             {
                 var greg = HebcalBridge.ConvertFromHebrew(value.Year, value.Month, value.Day.Value);
