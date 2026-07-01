@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -654,14 +655,7 @@ namespace ItimHebrewCalendar.Windows
                 UpdateStatusText.Text = "מפעיל את ההתקנה...";
                 UpdateChecker.RunInstaller(installerPath, SilentUpdateToggle.IsOn);
 
-                // Hard-exit so the installer can replace locked files AND so the
-                // post-install relaunch (runasoriginaluser in the .iss [Run]
-                // section) doesn't bounce off our single-instance mutex —
-                // Application.Current.Exit() alone leaves the tray / event
-                // listener / dispatcher keeping the process alive.
-                try { App.Tray?.Dispose(); } catch { }
-                try { Application.Current.Exit(); } catch { }
-                Environment.Exit(0);
+                ShutdownForUpdate();
             }
             catch (Exception ex)
             {
@@ -670,6 +664,32 @@ namespace ItimHebrewCalendar.Windows
                 UpdateProgressBar.Visibility = Visibility.Collapsed;
                 CheckUpdatesButton.IsEnabled = true;
                 InstallUpdateButton.IsEnabled = true;
+            }
+        }
+
+        // The freshly-launched installer waits for our single-instance mutex to be
+        // released before it replaces files in the install folder. A graceful WinUI
+        // shutdown (Application.Exit + Environment.Exit) runs finalizers on the UI
+        // thread and can hang or lag past the installer's mutex-wait timeout — the
+        // files stay locked, the copy fails, and with /NORESTART the update is
+        // silently deferred to the next reboot. TerminateProcess (Process.Kill)
+        // tears the process down immediately and lets the OS reclaim every handle,
+        // including the mutex, so the installer proceeds and relaunches us.
+        private static void ShutdownForUpdate()
+        {
+            // Remove the tray icon first so it doesn't linger as a ghost after the
+            // process is gone. Guarded — we hard-kill regardless of the outcome.
+            try { App.Tray?.Dispose(); } catch { }
+
+            try
+            {
+                Process.GetCurrentProcess().Kill();
+            }
+            catch
+            {
+                // Extremely unlikely; fall back to the managed exit path.
+                try { Application.Current.Exit(); } catch { }
+                Environment.Exit(0);
             }
         }
     }

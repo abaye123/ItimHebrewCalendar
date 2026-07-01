@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>עיתים — לוח שנה עברי | הורדה</title>
+<meta name="description" content="עיתים — לוח שנה עברי לשולחן העבודה של Windows: זמני היום בהלכה, אירועים ותזכורות, ממיר תאריכים ועוד. הורדה ישירה של הגרסה האחרונה." />
+
+<meta property="og:title" content="עיתים — לוח שנה עברי" />
+<meta property="og:description" content="הורדה ישירה של הגרסה האחרונה לשולחן העבודה של Windows." />
+<meta property="og:image" content="AppIcon.png" />
+<meta property="og:type" content="website" />
+
+<link rel="icon" href="AppIcon.png" />
+
+<style>
+  :root {
+    /* Palette lifted from the app icon: soft teal tile on warm cream. */
+    --teal-900: #14545c;
+    --teal-700: #1f7d87;
+    --teal-500: #2fa3ac;   /* primary */
+    --teal-400: #46b6bd;
+    --teal-300: #7fcccf;
+    --teal-100: #d9eef0;
+
+    --cream: #f4f1e9;
+    --cream-soft: #fbfaf5;
+    --ink: #17323a;
+    --ink-soft: #4b6a66;
+
+    --card: rgba(255, 255, 255, 0.72);
+    --card-border: rgba(47, 163, 172, 0.22);
+    --shadow: 0 12px 40px rgba(20, 84, 92, 0.16);
+    --shadow-sm: 0 4px 14px rgba(20, 84, 92, 0.10);
+    --radius-lg: 18px;
+    --radius: 12px;
+    --radius-sm: 8px;
+
+    --font: "Segoe UI Variable", "Segoe UI", "Assistant", "Rubik",
+            system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --cream: #0f2226;
+      --cream-soft: #12292e;
+      --ink: #eaf6f7;
+      --ink-soft: #a7c6c8;
+      --card: rgba(23, 50, 55, 0.66);
+      --card-border: rgba(70, 182, 189, 0.26);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background:
+      radial-gradient(1100px 620px at 82% -8%, var(--teal-100) 0%, transparent 60%),
+      radial-gradient(900px 520px at 8% 4%, rgba(169, 217, 210, 0.45) 0%, transparent 55%),
+      linear-gradient(160deg, var(--cream-soft) 0%, var(--cream) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 20px 40px; }
+
+  /* ── Hero ───────────────────────────────────────────── */
+  .hero { text-align: center; margin-bottom: 30px; }
+  .logo { width: 116px; height: 116px; border-radius: 26px; box-shadow: var(--shadow); margin-bottom: 18px; }
+  h1 { font-size: clamp(28px, 5vw, 40px); margin: 0 0 6px; letter-spacing: -0.5px; color: var(--teal-900); }
+  @media (prefers-color-scheme: dark) { h1 { color: var(--teal-300); } }
+  .tagline { font-size: clamp(15px, 2.4vw, 18px); color: var(--ink-soft); margin: 0; }
+
+  /* ── Cards ──────────────────────────────────────────── */
+  .card {
+    background: var(--card);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px 26px;
+    margin-bottom: 22px;
+  }
+  .card h2.section-title {
+    font-size: 18px; font-weight: 700; color: var(--teal-900);
+    margin: 0 0 14px;
+  }
+  @media (prefers-color-scheme: dark) { .card h2.section-title { color: var(--teal-300); } }
+
+  /* ── About ──────────────────────────────────────────── */
+  .about p { margin: 0 0 14px; font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip {
+    background: rgba(47, 163, 172, 0.10);
+    border: 1px solid var(--card-border);
+    color: var(--teal-700);
+    border-radius: 999px; padding: 6px 13px; font-size: 13px; font-weight: 600;
+  }
+  @media (prefers-color-scheme: dark) { .chip { color: var(--teal-300); } }
+
+  /* ── Download ───────────────────────────────────────── */
+  .version-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: linear-gradient(180deg, var(--teal-400), var(--teal-500));
+    color: #fff; font-weight: 600; font-size: 15px;
+    padding: 6px 14px; border-radius: 999px; box-shadow: var(--shadow-sm);
+  }
+  .meta { color: var(--ink-soft); font-size: 14px; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; max-width: 420px; margin-inline: auto;
+    padding: 15px 26px;
+    font-family: inherit; font-size: 18px; font-weight: 600;
+    color: #fff; text-decoration: none; border: none; border-radius: var(--radius);
+    background: linear-gradient(180deg, var(--teal-500) 0%, var(--teal-700) 100%);
+    box-shadow: 0 8px 22px rgba(31, 125, 135, 0.36);
+    cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(31, 125, 135, 0.44); filter: brightness(1.04); }
+  .btn:active { transform: translateY(0); }
+  .btn[aria-disabled="true"] { opacity: .6; pointer-events: none; }
+  .btn svg { width: 22px; height: 22px; }
+
+  .sub { text-align: center; margin-top: 14px; font-size: 13.5px; color: var(--ink-soft); }
+  .sub a, .req a { color: var(--teal-700); text-decoration: none; font-weight: 600; }
+  @media (prefers-color-scheme: dark) { .sub a { color: var(--teal-300); } }
+  .sub a:hover { text-decoration: underline; }
+  .req { margin-top: 10px; font-size: 12.5px; color: var(--ink-soft); text-align: center; }
+
+  /* ── Markdown blocks (release notes + help) ─────────── */
+  .md p { margin: 0 0 10px; }
+  .md ul { margin: 0 0 12px; padding-inline-start: 22px; }
+  .md li { margin: 4px 0; }
+  .md .md-h { font-weight: 700; color: var(--teal-900); margin: 14px 0 8px; }
+  @media (prefers-color-scheme: dark) { .md .md-h { color: var(--teal-300); } }
+  .md .md-h1 { font-size: 17px; }
+  .md .md-h2 { font-size: 16px; }
+  .md .md-h3, .md .md-h4 { font-size: 15px; }
+  .md .md-h:first-child { margin-top: 0; }
+  .md a { color: var(--teal-700); }
+  @media (prefers-color-scheme: dark) { .md a { color: var(--teal-300); } }
+  .md code {
+    background: rgba(47, 163, 172, 0.12); border-radius: 5px; padding: 1px 5px;
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 13px;
+  }
+  .md blockquote {
+    margin: 12px 0; padding: 8px 14px;
+    border-inline-start: 3px solid var(--teal-400);
+    background: rgba(47, 163, 172, 0.08); border-radius: var(--radius-sm);
+    color: var(--ink-soft); font-size: 14px;
+  }
+
+  .notes { max-height: 340px; overflow: auto; padding-inline-end: 6px; font-size: 14.5px; }
+  .notes::-webkit-scrollbar { width: 8px; }
+  .notes::-webkit-scrollbar-thumb { background: var(--teal-300); border-radius: 8px; }
+
+  /* ── Help accordion ─────────────────────────────────── */
+  .topic {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.35);
+  }
+  @media (prefers-color-scheme: dark) { .topic { background: rgba(255,255,255,0.04); } }
+  .topic > summary {
+    cursor: pointer; list-style: none;
+    padding: 14px 16px;
+    font-size: 15.5px; font-weight: 600; color: var(--teal-900);
+    display: flex; align-items: center; gap: 10px;
+    user-select: none;
+  }
+  @media (prefers-color-scheme: dark) { .topic > summary { color: var(--teal-300); } }
+  .topic > summary::-webkit-details-marker { display: none; }
+  .topic > summary::before {
+    content: ""; width: 8px; height: 8px; flex: none;
+    border-inline-start: 2px solid var(--teal-500);
+    border-bottom: 2px solid var(--teal-500);
+    transform: rotate(45deg); transition: transform .18s ease;
+    margin-top: -3px;
+  }
+  .topic[open] > summary::before { transform: rotate(-45deg); margin-top: 2px; }
+  .topic > summary:hover { background: rgba(47, 163, 172, 0.06); }
+  .topic-body { padding: 2px 18px 14px; font-size: 14.5px; }
+
+  /* ── Credit + footer ────────────────────────────────── */
+  .credit {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    margin: 10px 0 4px;
+  }
+  .avatar {
+    width: 54px; height: 54px; border-radius: 50%;
+    border: 2px solid var(--teal-300); box-shadow: var(--shadow-sm);
+  }
+  .credit-text { text-align: start; }
+  .credit-name { font-weight: 700; color: var(--ink); font-size: 15px; }
+  .credit-links { font-size: 13.5px; }
+  .credit-links a { color: var(--teal-700); text-decoration: none; font-weight: 600; }
+  @media (prefers-color-scheme: dark) { .credit-links a { color: var(--teal-300); } }
+  .credit-links a:hover { text-decoration: underline; }
+
+  footer { text-align: center; color: var(--ink-soft); font-size: 13px; margin-top: 16px; }
+  footer a { color: var(--teal-700); text-decoration: none; }
+  @media (prefers-color-scheme: dark) { footer a { color: var(--teal-300); } }
+  footer a:hover { text-decoration: underline; }
+
+  .spinner {
+    width: 26px; height: 26px;
+    border: 3px solid var(--teal-100); border-top-color: var(--teal-500);
+    border-radius: 50%; animation: spin .8s linear infinite; margin: 6px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <img class="logo" src="AppIcon.png" alt="עיתים — לוח שנה עברי" />
+      <h1>עיתים — לוח שנה עברי</h1>
+      <p class="tagline">לוח שנה עברי, זמני היום בהלכה, אירועים ותזכורות — על שולחן העבודה של Windows</p>
+    </header>
+
+    <!-- Download -->
+    <section class="card">
+      <div class="version-row">
+        <span class="badge" id="versionBadge">
+          <span class="spinner" style="width:16px;height:16px;border-width:2px;margin:0"></span>
+          טוען…
+        </span>
+        <span class="meta" id="releaseMeta"></span>
+      </div>
+
+      <a class="btn" id="downloadBtn" href="https://github.com/abaye123/ItimHebrewCalendar/releases/latest" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M5 21h14" />
+        </svg>
+        <span id="downloadLabel">הורדה לחלונות</span>
+      </a>
+
+      <p class="sub">
+        <a href="https://github.com/abaye123/ItimHebrewCalendar/releases" target="_blank" rel="noopener">כל הגרסאות והשחרורים הקודמים</a>
+      </p>
+      <p class="req">דרישת מערכת: Windows 10 (גרסה 1809 / build 17763) ומעלה · 64-bit</p>
+    </section>
+
+    <!-- About -->
+    <section class="card about">
+      <h2 class="section-title">על התוכנה</h2>
+      <p>
+        <strong>עיתים</strong> הוא לוח שנה עברי ל-Windows עם זמני היום בהלכה, בעיצוב Fluent של Windows 11.
+        הוא נותן חלופה ללוח השנה המובנה של Microsoft — שאינו מאפשר להציג תאריך עברי ללא שינוי תאריכון המערכת, שגורם לשינוי בכל המערכת — ומרכז במקום אחד לוח חודשי,
+        פרטי יום, זמני היום, ניהול אירועים ותזכורות (כולל תזכורות לפי זמנים הלכתיים), ממיר תאריכים,
+        ספירת העומר וזיהוי מיקום אוטומטי. התוכנה יושבת באזור ההודעות (tray) ומציגה אייקון דינמי עם התאריך העברי של היום.
+      </p>
+      <div class="chips">
+        <span class="chip">זמני היום בהלכה</span>
+        <span class="chip">אירועים ותזכורות</span>
+        <span class="chip">ממיר תאריכים עברי↔לועזי</span>
+        <span class="chip">ספירת העומר</span>
+        <span class="chip">אייקון tray דינמי</span>
+        <span class="chip">זיהוי מיקום אוטומטי</span>
+        <span class="chip">מנוע KosherJava / hebcal</span>
+      </div>
+    </section>
+
+    <!-- What's new -->
+    <section class="card" id="notesCard" style="display:none">
+      <h2 class="section-title">מה חדש בגרסה זו</h2>
+      <div class="md notes" id="notesBody"></div>
+    </section>
+
+    <!-- Help -->
+    <section class="card" id="helpCard" style="display:none">
+      <h2 class="section-title">מדריך שימוש ועזרה</h2>
+      <div id="helpTopics"></div>
+    </section>
+
+    <!-- Credit -->
+    <section class="card">
+      <div class="credit">
+        <img class="avatar" src="https://github.com/abaye123.png?size=108" alt="abaye"
+             onerror="this.style.display='none'" />
+        <div class="credit-text">
+          <div class="credit-name">פותח על ידי abaye</div>
+          <div class="credit-links">
+            <a href="https://abaye.co" target="_blank" rel="noopener">abaye.co</a> ·
+            <a href="https://github.com/abaye123" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      פרויקט קוד פתוח (MIT) ·
+      <a href="https://github.com/abaye123/ItimHebrewCalendar" target="_blank" rel="noopener">הריפו ב-GitHub</a>
+    </footer>
+  </main>
+
+<script>
+  const REPO = "abaye123/ItimHebrewCalendar";
+  const API = `https://api.github.com/repos/${REPO}/releases/latest`;
+  const RELEASES_PAGE = `https://github.com/${REPO}/releases`;
+  const LATEST_PAGE = `https://github.com/${REPO}/releases/latest`;
+
+  const $ = (id) => document.getElementById(id);
+
+  function fmtDate(iso) {
+    try { return new Date(iso).toLocaleDateString("he-IL", { year: "numeric", month: "long", day: "numeric" }); }
+    catch { return ""; }
+  }
+  function fmtSize(bytes) {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+  }
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // Compact Markdown → HTML: headings, bold, code, links, quotes, bullet lists.
+  // Raw HTML tags are stripped and text is escaped before inline formatting,
+  // so output is safe to inject.
+  function renderMarkdown(md) {
+    const text = md.replace(/<[^>]+>/g, "").replace(/\r\n?/g, "\n");
+    const lines = text.split("\n");
+    const inline = (s) => escapeHtml(s)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+               '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+    let html = "", inList = false;
+    const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { closeList(); continue; }
+      const h = line.match(/^(#{1,6})\s+(.*)$/);
+      if (h) { closeList(); const lvl = Math.min(h[1].length, 4); html += `<div class="md-h md-h${lvl}">${inline(h[2])}</div>`; continue; }
+      const q = line.match(/^>\s?(.*)$/);
+      if (q) { closeList(); html += `<blockquote>${inline(q[1])}</blockquote>`; continue; }
+      const li = line.match(/^[-*]\s+(.*)$/);
+      if (li) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${inline(li[1])}</li>`; continue; }
+      closeList();
+      html += `<p>${inline(line)}</p>`;
+    }
+    closeList();
+    return html;
+  }
+
+  async function loadRelease() {
+    try {
+      const res = await fetch(API, { headers: { Accept: "application/vnd.github+json" } });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+
+      const tag = (data.tag_name || "").replace(/^v/i, "");
+      const asset = (data.assets || []).find(a => /\.exe$/i.test(a.name));
+
+      $("versionBadge").innerHTML = tag ? `גרסה ${tag}` : "הגרסה האחרונה";
+
+      const parts = [];
+      if (data.published_at) parts.push("שוחררה ב־" + fmtDate(data.published_at));
+      if (asset) parts.push(fmtSize(asset.size));
+      $("releaseMeta").textContent = parts.join(" · ");
+
+      const btn = $("downloadBtn");
+      if (asset) {
+        btn.href = asset.browser_download_url;
+        btn.setAttribute("download", "");
+        $("downloadLabel").textContent = tag ? `הורדה — גרסה ${tag}` : "הורדה לחלונות";
+      } else {
+        btn.href = LATEST_PAGE;
+        $("downloadLabel").textContent = "עבור לעמוד ההורדה";
+      }
+      btn.removeAttribute("aria-disabled");
+
+      const body = (data.body || "").trim();
+      if (body) {
+        $("notesBody").innerHTML = renderMarkdown(body);
+        $("notesCard").style.display = "block";
+      }
+    } catch (err) {
+      console.error(err);
+      $("versionBadge").innerHTML = "הגרסה האחרונה";
+      const btn = $("downloadBtn");
+      btn.href = LATEST_PAGE;
+      btn.removeAttribute("aria-disabled");
+      $("downloadLabel").textContent = "עבור לעמוד ההורדה";
+    }
+  }
+
+  async function loadHelp() {
+    try {
+      const res = await fetch("HELP.md", { cache: "no-cache" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const md = (await res.text()).replace(/\r\n?/g, "\n");
+
+      // Split into topics on each "## " heading.
+      const parts = md.split(/\n(?=##\s)/);
+      const container = $("helpTopics");
+      container.innerHTML = "";
+      let first = true;
+
+      for (const part of parts) {
+        const m = part.match(/^##\s+(.*)\n?([\s\S]*)$/);
+        if (!m) continue; // any preamble before the first topic
+        const title = m[1].trim();
+        const body = (m[2] || "").trim();
+
+        const details = document.createElement("details");
+        details.className = "topic";
+        if (first) { details.open = true; first = false; }
+
+        const summary = document.createElement("summary");
+        summary.textContent = title;
+
+        const content = document.createElement("div");
+        content.className = "md topic-body";
+        content.innerHTML = renderMarkdown(body);
+
+        details.appendChild(summary);
+        details.appendChild(content);
+        container.appendChild(details);
+      }
+
+      if (container.children.length) $("helpCard").style.display = "block";
+    } catch (err) {
+      console.error(err);
+      $("helpCard").style.display = "none";
+    }
+  }
+
+  loadRelease();
+  loadHelp();
+</script>
+</body>
+</html>
