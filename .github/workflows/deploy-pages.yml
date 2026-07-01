@@ -36,6 +36,11 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Enable Pages on the repo automatically if it isn't already, so the
+          # deploy doesn't fail with "Get Pages site failed / Not Found" on the
+          # first run. Requires the pages: write permission granted above.
+          enablement: true
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
