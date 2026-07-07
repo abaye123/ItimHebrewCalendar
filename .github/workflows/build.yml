@@ -55,27 +55,44 @@ jobs:
         shell: cmd
         run: call HebcalNative\build-hebcal-dll.bat x64
 
-      # 2) Publish the WinUI 3 app. Mirrors build.bat: load the VS Developer
-      #    environment first so WinAppSDK's XAML/PRI MSBuild tasks actually run
-      #    (a bare msbuild "succeeds" but silently skips them).
-      - name: Publish app (x64)
+      # 2) Build the WinUI 3 app the same way Visual Studio does locally: a plain
+      #    Release build for x64 with NO RuntimeIdentifier, so the output lands
+      #    directly in ...\net8.0-windows10.0.19041.0\ (where HebDate.iss reads
+      #    from). Passing -r win-x64 would nest it under a win-x64\ subfolder.
+      #    Load the VS Developer environment first so WinAppSDK's XAML/PRI tasks
+      #    actually run (a bare msbuild "succeeds" but silently skips them).
+      - name: Build app (x64)
         shell: cmd
         run: |
           for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -property installationPath`) do set "VSPATH=%%i"
           if not defined VSPATH ( echo [error] Visual Studio not found & exit /b 1 )
           call "%VSPATH%\Common7\Tools\VsDevCmd.bat" -arch=x64 -no_logo
-          msbuild ItimHebrewCalendar.csproj -restore -t:Publish -p:Configuration=Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:SelfContained=false -v:m
+          msbuild ItimHebrewCalendar.csproj -restore -t:Build -p:Configuration=Release -p:Platform=x64 -v:m
 
-      - name: Verify publish output
+      # The RID publish nests the app under ...\net8.0-windows10.0.19041.0\win-x64\,
+      # but HebDate.iss reads it flat from ...\net8.0-windows10.0.19041.0\ (as a
+      # local Visual Studio build produces it). Move it up so the .iss finds it,
+      # without changing anything in the repo.
+      - name: Flatten build output for the installer
         shell: pwsh
         run: |
-          $dir = "bin\x64\Release\net8.0-windows10.0.19041.0"
-          if (-not (Test-Path "$dir\ItimHebrewCalendar.exe")) {
-            Write-Host "Expected ItimHebrewCalendar.exe not found under $dir. Actual bin tree:"
+          $root = "bin\x64\Release\net8.0-windows10.0.19041.0"
+          $rid  = Join-Path $root "win-x64"
+          if (-not (Test-Path (Join-Path $rid "ItimHebrewCalendar.exe"))) {
+            Write-Host "exe not found under $rid. Actual bin tree:"
             Get-ChildItem -Recurse bin | Select-Object -ExpandProperty FullName
             exit 1
           }
-          Write-Host "OK: $dir\ItimHebrewCalendar.exe"
+          # Drop nested folders that aren't app runtime files (a duplicate publish\
+          # copy and the marketing site) so they don't bloat the installer.
+          Remove-Item -Recurse -Force (Join-Path $rid "publish"),(Join-Path $rid "website") -ErrorAction SilentlyContinue
+          # Move the app up to where HebDate.iss expects it, then drop the empty win-x64\.
+          Get-ChildItem -Force $rid | Move-Item -Destination $root -Force
+          Remove-Item -Recurse -Force $rid
+          if (-not (Test-Path (Join-Path $root "ItimHebrewCalendar.exe"))) {
+            Write-Host "Flatten failed - exe missing from $root"; exit 1
+          }
+          Write-Host "OK: app flattened into $root"
 
       # ---------------------------------------------------------------------
       #  CODE SIGNING slots in here once SignPath / OSSign approves the project:
