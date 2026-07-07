@@ -72,11 +72,15 @@
                 VerticalScrollBarVisibility="Auto"
                 Padding="24,8,24,20">
             <StackPanel Spacing="10">
-                <InfoBar IsOpen="True"
-                         IsClosable="False"
-                         Severity="Warning"
-                         Title="הזמנים למידע בלבד"
-                         Message="ייתכנו סטיות של מספר דקות. אין לסמוך להלכה למעשה"/>
+                <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                        CornerRadius="4"
+                        Padding="10,3"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="⚠ למידע בלבד - ייתכנו סטיות; אין לסמוך להלכה למעשה"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"/>
+                </Border>
                 <StackPanel x:Name="ResultsPanel" Spacing="8"/>
             </StackPanel>
         </ScrollViewer>

@@ -225,14 +225,20 @@ namespace ItimHebrewCalendar.Windows
                     return;
                 }
 
-                t.ZmanimPanel.Children.Add(new InfoBar
+                t.ZmanimPanel.Children.Add(new Border
                 {
-                    IsOpen = true,
-                    IsClosable = false,
-                    Severity = InfoBarSeverity.Warning,
-                    Title = "הזמנים למידע בלבד",
-                    Message = "ייתכנו סטיות של מספר דקות. אין לסמוך להלכה למעשה",
-                    Margin = new Thickness(0, 0, 0, 6)
+                    Background = (Brush)Application.Current.Resources["SystemFillColorCautionBackgroundBrush"],
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(10, 3, 10, 3),
+                    Margin = new Thickness(0, 0, 0, 6),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = "⚠ למידע בלבד - ייתכנו סטיות; אין לסמוך להלכה למעשה",
+                        FontSize = 11,
+                        TextWrapping = TextWrapping.Wrap,
+                        TextAlignment = TextAlignment.Center
+                    }
                 });
 
                 bool any = false;
