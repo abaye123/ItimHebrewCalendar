@@ -137,11 +137,12 @@ namespace ItimHebrewCalendar.Windows
                 ResultsPanel.Children.Clear();
 
                 bool isFriday = date.DayOfWeek == DayOfWeek.Friday;
+                bool isSaturday = date.DayOfWeek == DayOfWeek.Saturday;
                 var monthCal = HebcalBridge.GetMonth(date.Year, date.Month, loc.IsInIsrael, App.Settings.ShowModernHolidays);
                 var dayInfo = monthCal?.Days.FirstOrDefault(d => d.GregDay == date.Day);
                 bool isErevChag = dayInfo?.Events.Any(e => e.IsCandleLighting && !isFriday) ?? false;
 
-                if (isFriday || isErevChag)
+                if (isFriday || isErevChag || isSaturday)
                 {
                     var specialCard = new Border
                     {
@@ -167,6 +168,13 @@ namespace ItimHebrewCalendar.Windows
                             if (!string.IsNullOrEmpty(shabbat.Parasha))
                                 specialStack.Children.Add(MakeSpecialRow("📖 פרשת השבוע", shabbat.Parasha));
                         }
+                    }
+
+                    if (isSaturday)
+                    {
+                        var tzeitShabbat = ShabbatZmanim.TzeitShabbat(date, zmanim);
+                        if (!string.IsNullOrEmpty(tzeitShabbat))
+                            specialStack.Children.Add(MakeSpecialRow(ShabbatZmanim.TzeitShabbatLabel, tzeitShabbat));
                     }
 
                     specialCard.Child = specialStack;

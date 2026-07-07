@@ -236,12 +236,13 @@ namespace ItimHebrewCalendar.Windows
                 });
 
                 bool any = false;
-                foreach (var row in AllZmanim)
-                {
-                    if ((App.Settings.ZmanimToShow & row.Flag) == 0) continue;
-                    var time = row.Get(zmanim);
-                    if (string.IsNullOrEmpty(time)) continue;
 
+                var candle = ShabbatZmanim.CandleLighting(day.Date, zmanim, loc);
+                var tzeitShabbat = ShabbatZmanim.TzeitShabbat(day.Date, zmanim);
+                bool candleAdded = false, tzeitShabbatAdded = false;
+
+                void AddZmanRow(string name, string time, bool highlight)
+                {
                     var g = new Grid
                     {
                         Padding = new Thickness(0, 8, 0, 8),
@@ -251,7 +252,14 @@ namespace ItimHebrewCalendar.Windows
                     g.ColumnDefinitions.Add(new ColumnDefinition());
                     g.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                    var nameTb = new TextBlock { Text = row.Name, FontSize = 13 };
+                    var nameTb = new TextBlock
+                    {
+                        Text = name,
+                        FontSize = 13,
+                        FontWeight = highlight
+                            ? Microsoft.UI.Text.FontWeights.SemiBold
+                            : Microsoft.UI.Text.FontWeights.Normal
+                    };
                     Grid.SetColumn(nameTb, 0);
                     g.Children.Add(nameTb);
 
@@ -266,9 +274,38 @@ namespace ItimHebrewCalendar.Windows
                     Grid.SetColumn(valTb, 1);
                     g.Children.Add(valTb);
 
-                    t.ZmanimPanel.Children.Add(g);
+                    t.ZmanimPanel!.Children.Add(g);
                     any = true;
                 }
+
+                foreach (var row in AllZmanim)
+                {
+                    if ((App.Settings.ZmanimToShow & row.Flag) == 0) continue;
+                    var time = row.Get(zmanim);
+                    if (string.IsNullOrEmpty(time)) continue;
+
+                    // Candle lighting sits just before sunset chronologically.
+                    if (row.Flag == ZmanimDisplay.Sunset && candle.Length > 0 && !candleAdded)
+                    {
+                        AddZmanRow(ShabbatZmanim.CandleLightingLabel, candle, true);
+                        candleAdded = true;
+                    }
+
+                    AddZmanRow(row.Name, time, false);
+
+                    // Motzaei Shabbat sits just after tzeit hakochavim.
+                    if (row.Flag == ZmanimDisplay.Tzeit && tzeitShabbat.Length > 0 && !tzeitShabbatAdded)
+                    {
+                        AddZmanRow(ShabbatZmanim.TzeitShabbatLabel, tzeitShabbat, true);
+                        tzeitShabbatAdded = true;
+                    }
+                }
+
+                // Fallback when the anchor zman (sunset / tzeit) is hidden via settings.
+                if (candle.Length > 0 && !candleAdded)
+                    AddZmanRow(ShabbatZmanim.CandleLightingLabel, candle, true);
+                if (tzeitShabbat.Length > 0 && !tzeitShabbatAdded)
+                    AddZmanRow(ShabbatZmanim.TzeitShabbatLabel, tzeitShabbat, true);
 
                 if (t.ZmanimSection != null)
                     t.ZmanimSection.Visibility = any ? Visibility.Visible : Visibility.Collapsed;
