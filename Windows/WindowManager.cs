@@ -9,8 +9,8 @@ namespace ItimHebrewCalendar.Windows
     //
     // The key identifies the logical window: a Type for utility singletons
     // (settings, converter, all-events, ...), a sentinel for the shared "new event"
-    // draft, or an event id for a specific event editor. UI-thread only — every
-    // caller runs on the dispatcher — so no locking is needed.
+    // draft, or an event id for a specific event editor. UI-thread only - every
+    // caller runs on the dispatcher - so no locking is needed.
     internal static class WindowManager
     {
         private static readonly Dictionary<object, Window> Open = new();
@@ -36,7 +36,7 @@ namespace ItimHebrewCalendar.Windows
             return win;
         }
 
-        // Closes every tracked window — used on app exit so utility windows don't
+        // Closes every tracked window - used on app exit so utility windows don't
         // linger after the tray shuts down.
         public static void CloseAll()
         {
