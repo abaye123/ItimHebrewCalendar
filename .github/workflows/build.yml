@@ -1,0 +1,122 @@
+name: Build installer
+
+# Builds the Windows x64 installer end-to-end on a clean runner:
+#   1. HebcalNative.dll from Go (CGO)
+#   2. The WinUI 3 app (Visual Studio MSBuild publish)
+#   3. The Inno Setup installer (with the Windows App Runtime bundled)
+#
+# Reuses the repo's existing scripts (HebcalNative/build-hebcal-dll.bat and
+# Installer/HebDate.iss) so the result matches a local build.bat run.
+#
+# Runs on version tags (v*) to attach the installer to a GitHub Release, and
+# can be triggered manually (workflow_dispatch) to test the build without tagging.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to create the Release on tag builds
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: HebcalNative/lib/go.mod
+          cache-dependency-path: HebcalNative/lib/go.sum
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Ensure MinGW gcc (CGO compiler)
+        shell: pwsh
+        run: |
+          if (-not (Get-Command gcc -ErrorAction SilentlyContinue)) {
+            choco install mingw -y --no-progress
+          }
+          gcc --version
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      # 1) Native Go DLL -> Resources\HebcalNative.dll
+      - name: Build HebcalNative.dll
+        shell: cmd
+        run: call HebcalNative\build-hebcal-dll.bat x64
+
+      # 2) Publish the WinUI 3 app. Mirrors build.bat: load the VS Developer
+      #    environment first so WinAppSDK's XAML/PRI MSBuild tasks actually run
+      #    (a bare msbuild "succeeds" but silently skips them).
+      - name: Publish app (x64)
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -property installationPath`) do set "VSPATH=%%i"
+          if not defined VSPATH ( echo [error] Visual Studio not found & exit /b 1 )
+          call "%VSPATH%\Common7\Tools\VsDevCmd.bat" -arch=x64 -no_logo
+          msbuild ItimHebrewCalendar.csproj -restore -t:Publish -p:Configuration=Release -p:Platform=x64 -p:RuntimeIdentifier=win-x64 -p:SelfContained=false -v:m
+
+      - name: Verify publish output
+        shell: pwsh
+        run: |
+          $dir = "bin\x64\Release\net8.0-windows10.0.19041.0"
+          if (-not (Test-Path "$dir\ItimHebrewCalendar.exe")) {
+            Write-Host "Expected ItimHebrewCalendar.exe not found under $dir. Actual bin tree:"
+            Get-ChildItem -Recurse bin | Select-Object -ExpandProperty FullName
+            exit 1
+          }
+          Write-Host "OK: $dir\ItimHebrewCalendar.exe"
+
+      # ---------------------------------------------------------------------
+      #  CODE SIGNING slots in here once SignPath / OSSign approves the project:
+      #  sign Resources\HebcalNative.dll and the published ItimHebrewCalendar.exe
+      #  BEFORE the installer is built, then sign the installer after step 3.
+      # ---------------------------------------------------------------------
+
+      # 3) The installer bundles the Windows App Runtime, so ISCC needs that file
+      #    present at compile time. Download it into Installer\Redist first.
+      - name: Fetch Windows App Runtime
+        shell: pwsh
+        run: |
+          $dst = "Installer\Redist"
+          New-Item -ItemType Directory -Force -Path $dst | Out-Null
+          $ProgressPreference = "SilentlyContinue"
+          Invoke-WebRequest "https://aka.ms/windowsappsdk/1.7/latest/windowsappruntimeinstall-x64.exe" `
+            -OutFile "$dst\WindowsAppRuntimeInstall-x64.exe" -UseBasicParsing
+
+      - name: Build installer (Inno Setup)
+        shell: cmd
+        run: |
+          cd Installer
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" HebDate.iss
+
+      # --- Sign the finished installer here once signing is set up. ---
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ItimHebrewCalendar-Setup
+          path: Release\ItimHebrewCalendar-Setup-*.exe
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = Get-ChildItem Release\ItimHebrewCalendar-Setup-*.exe | Select-Object -First 1
+          gh release create $env:GITHUB_REF_NAME $exe.FullName `
+            --title "עיתים $env:GITHUB_REF_NAME" `
+            --notes "מתקין אוטומטי שנבנה מתגית זו." `
+            --draft
