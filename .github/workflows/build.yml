@@ -27,6 +27,71 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # On a tag push (v1.9.0) this exposes VERSION=1.9.0 to later steps, which
+      # then flows into the .NET assembly version and the Inno Setup AppVersion.
+      # On a manual run there's no tag, so VERSION stays empty and the versions
+      # already committed in the .csproj / HebDate.iss are used as-is.
+      - name: Determine version from tag
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $ver = $env:GITHUB_REF_NAME -replace '^v',''
+            if ($ver -notmatch '^[0-9]+(\.[0-9]+){1,3}$') {
+              Write-Host "Tag '$($env:GITHUB_REF_NAME)' is not a version like v1.2.3 - aborting."
+              exit 1
+            }
+            Write-Host "Version from tag: $ver"
+          } else {
+            $ver = ''
+            Write-Host "Manual run (no tag) - keeping the versions already in the repo files."
+          }
+          "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      # On tag builds, write the version into the source files that carry it
+      # literally. Encoding (UTF-8, no BOM) is preserved so the Hebrew text in
+      # these files is not corrupted. This stamps the version into THIS build
+      # only - it does not commit the changed files back to the repo.
+      - name: Stamp version into source files
+        if: env.VERSION != ''
+        shell: pwsh
+        run: |
+          $base = (Get-Location).Path
+          $ver  = $env:VERSION
+          # 4-part form for the Win32 manifest (e.g. 1.9.0 -> 1.9.0.0)
+          $p = $ver.Split('.'); while ($p.Count -lt 4) { $p += '0' }
+          $ver4 = ($p[0..3]) -join '.'
+
+          function Stamp($rel, $pattern, $replacement) {
+            $path  = Join-Path $base $rel
+            $bytes = [System.IO.File]::ReadAllBytes($path)
+            $bom   = ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+            $text  = [System.IO.File]::ReadAllText($path)
+            $new   = [regex]::Replace($text, $pattern, $replacement)
+            if ($new -eq $text) { Write-Host "WARNING: no version match in $rel" }
+            [System.IO.File]::WriteAllText($path, $new, (New-Object System.Text.UTF8Encoding($bom)))
+            Write-Host "Stamped $rel"
+          }
+
+          # Current committed version - used to find the literal fallback in the C#.
+          $old = [regex]::Match(
+                   (Get-Content (Join-Path $base 'ItimHebrewCalendar.csproj') -Raw),
+                   '<Version>([^<]+)</Version>').Groups[1].Value
+
+          # 1) .csproj : <Version>1.8.0</Version>
+          Stamp 'ItimHebrewCalendar.csproj' '<Version>[^<]*</Version>' "<Version>$ver</Version>"
+
+          # 2) app.manifest : <assemblyIdentity version="1.8.0.0" .../>
+          Stamp 'app.manifest' '(<assemblyIdentity\b[^>]*\bversion=")[^"]*(")' "`${1}$ver4`${2}"
+
+          # 3) SettingsWindow.xaml.cs : fallback literal "גרסה 1.8.0" (2 places).
+          #    Anchored so it only matches the standalone old version, not a
+          #    substring of a longer number.
+          if ($old) {
+            Stamp 'Windows/SettingsWindow.xaml.cs' "(?<![\d.])$([regex]::Escape($old))(?![\d.])" $ver
+          } else {
+            Write-Host "Could not read <Version> from csproj; skipping the C# fallback."
+          }
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -124,7 +189,9 @@ jobs:
         shell: cmd
         run: |
           cd Installer
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" HebDate.iss
+          set "VERARG="
+          if not "%VERSION%"=="" set "VERARG=/DAppVersion=%VERSION%"
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" %VERARG% HebDate.iss
 
       # --- Sign the finished installer here once signing is set up. ---
 
